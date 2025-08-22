@@ -925,6 +925,18 @@ button:focus {
   font-family: "Segoe UI", sans-serif;
 }
 
+@media (max-width: 767px) {
+  .custom-font-size {
+    font-size: 0.4rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .custom-font-size {
+    font-size: 0.95rem;
+  }
+}
+
 .beast-section {
   background-image: url("https://www.nexaexperience.com/adobe/assets/urn:aaid:aem:c6522fd9-a377-4795-b3c7-bf3ae05f0474/as/AR_AB_EVITARA_AERODYNAMIC_SHOT_OUTDOOR_04-copy-2.jpg?height=1687&width=750&id=1&preferwebp=true");
   background-size: cover;

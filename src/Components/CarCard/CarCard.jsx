@@ -22,7 +22,7 @@ const CarCard = ({ car }) => {
       className="card position-relative"
       onClick={handleCardClick}
       style={{
-        maxWidth: "18rem",
+        // maxWidth: "25rem",
         width: "100%",
         borderRadius: "16px",
         overflow: "hidden",

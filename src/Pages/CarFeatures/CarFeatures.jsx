@@ -14,6 +14,7 @@ const VideoSection = ({
         muted
         loop
         playsInline
+        preload="auto"
         className="position-absolute top-0 start-0 w-100 h-100 object-fit-cover"
       >
         <source src={videoSrc} type="video/mp4" />
@@ -25,7 +26,7 @@ const VideoSection = ({
       ></div>
 
       <Container
-        className={`h-100 position-relative z-1 d-flex flex-column justify-content-center ${containerClass}`}
+        className={`custom-font-size h-100 position-relative z-1 d-flex flex-column justify-content-center ${containerClass}`}
       >
         {children}
       </Container>
