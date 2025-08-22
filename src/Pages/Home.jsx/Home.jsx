@@ -66,7 +66,7 @@ const Home = () => {
         className="justify-content-center align-items-center"
         style={{
           height: "80vh",
-          backgroundImage: 'url("/public/assets/landingBg.jpg")',
+          backgroundImage: 'url("/assets/landingBg.jpg")',
           backgroundSize: "cover",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat"
