@@ -287,7 +287,7 @@ const CarFeatures = () => {
       {/* third page */}
       <VideoSection
         videoSrc="https://www.nexaexperience.com/adobe/assets/urn:aaid:aem:82826289-cc2c-471c-baeb-48a4e8096b57/renditions/original/as/YY8%2030SEC%20A%20BROKER%20and%20DRUMMER%20CLEAN%20HD%20NEW.mp4"
-        overlayOpacity={0.1}
+        overlayOpacity={0.5}
         containerClass="ps-4"
       >
         <div>
