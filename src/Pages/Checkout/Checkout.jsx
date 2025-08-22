@@ -9,7 +9,7 @@ import {
   Form
 } from "react-bootstrap";
 import BreadcrumbNav from "../../Components/Breadcrumb/Breadcrumb";
-import { cars } from "../../data/carsData";
+import { cars } from "../../Data/carsData";
 import { MdEventSeat } from "react-icons/md";
 import { SiTransmission } from "react-icons/si";
 import { OPPS_MSG, SERVER_ERROR, SUCCESS_MSG } from "../../Utils/strings";
