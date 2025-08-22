@@ -14,6 +14,7 @@ import { useToastr } from "./Components/Toastr/ToastrProvider";
 import { OPPS_MSG, SESSION_EXPIRE } from "./Utils/strings";
 import Checkout from "./Pages/Checkout/Checkout";
 import CarFilters from "./Pages/CarFiltters/CarFiltters";
+import CarFeatures from "./Pages/CarFeatures/CarFeatures";
 
 const App = () => {
   const { customToast } = useToastr();
@@ -111,6 +112,8 @@ const App = () => {
         <Route path="register" element={<Register />} />
         <Route path="*" element={<PageNotFound />} />
         <Route path="cars" element={<CarFilters/>}/>
+        <Route path="car-fetures" element={<CarFeatures/>}/>
+        
         <Route
           path="checkout"
           element={

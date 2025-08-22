@@ -72,7 +72,7 @@ const Home = () => {
           backgroundRepeat: "no-repeat"
         }}
       ></div>
-      <div className="mt-sm-2">
+      <div>
         <AnimatedLanding />
         <CarFiltters />
         <ExclusiveOffers />

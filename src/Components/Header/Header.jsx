@@ -153,17 +153,17 @@ const NavbarEMT = () => {
                     aria-labelledby="newCarsDropdown"
                   >
                     <li>
-                      <NavLink className="dropdown-item" to="/cars">
+                      <NavLink className="dropdown-item" to="/car-fetures">
                         Sedan
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink className="dropdown-item" to="/cars">
+                      <NavLink className="dropdown-item" to="/car-fetures">
                         SUV
                       </NavLink>
                     </li>
                     <li>
-                      <NavLink className="dropdown-item" to="/cars">
+                      <NavLink className="dropdown-item" to="/car-fetures">
                         Hatchback
                       </NavLink>
                     </li>
@@ -264,7 +264,7 @@ const NavbarEMT = () => {
                     <li>
                       <NavLink
                         className="dropdown-item"
-                        to="/for-sale-vehicles/cars"
+                        to="/for-sale-vehicles/car-fetures"
                       >
                         Cars
                       </NavLink>
@@ -376,7 +376,7 @@ const NavbarEMT = () => {
 
             <li className="nav-item">
               <NavLink
-                to="/newCars"
+                to="/car-fetures"
                 onClick={closeOffcanvas}
                 className={({ isActive }) =>
                   `nav-NavLink ${

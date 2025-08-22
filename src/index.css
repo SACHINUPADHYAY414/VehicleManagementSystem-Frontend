@@ -850,3 +850,131 @@ button:focus {
   background: #00adef;
   color: #fff;
 }
+.custom-hero-section {
+  padding: 2px 60px;
+  background-color: #000;
+}
+
+@media (max-width: 767px) {
+  .custom-hero-section {
+    padding: 2px 20px;
+  }
+}
+
+.custom-hero-text h1 {
+  font-size: 3rem;
+  font-weight: 700;
+}
+
+.custom-hero-text p {
+  font-size: 1.1rem;
+  margin: 20px 0;
+}
+
+.custom-btn-outline-light {
+  border: 1px solid #fff;
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 4px;
+  background: transparent;
+  transition: all 0.3s ease;
+}
+
+.custom-btn-outline-light:hover {
+  background: #fff;
+  color: #000;
+}
+
+.custom-hero-img img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+}
+
+.comfort-section {
+  background-image: url("https://www.nexaexperience.com/adobe/assets/urn:aaid:aem:5df7f7f5-e61a-481c-9b00-09f8e9e85413/as/C1_AR_BP_NEXA_E-VITARA_LONGER-WHEELBASE_03.png?width=750&id=1&preferwebp=true");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+  position: relative;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.beast-section {
+  background-image: url("https://www.nexaexperience.com/adobe/assets/urn:aaid:aem:c6522fd9-a377-4795-b3c7-bf3ae05f0474/as/AR_AB_EVITARA_AERODYNAMIC_SHOT_OUTDOOR_04-copy-2.jpg?height=1687&width=750&id=1&preferwebp=true");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+  position: relative;
+  font-family: "Segoe UI", sans-serif;
+}
+
+.Safety-section {
+  background-image: url("https://www.nexaexperience.com/adobe/assets/urn:aaid:aem:dd526c4c-3602-415a-8524-df7245b89752/as/AR_BP_NEXA_E-VITARA_E_GRID_BATTERY_03-copy-2.jpg.png?width=750&id=1&preferwebp=true");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  min-height: 100vh;
+  position: relative;
+  font-family: "Segoe UI", sans-serif;
+}
+.comfort-overlay,
+.Safety-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.7) 10%,
+    rgba(0, 0, 0, 0.4) 60%,
+    rgba(0, 0, 0, 0) 100%
+  );
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.charging-overlay,
+.beast-overlay {
+  background: linear-gradient(
+    to right,
+    rgba(0, 0, 0, 0.55) 15%,
+    rgba(0, 0, 0, 0.05) 45%,
+    rgba(0, 0, 0, 0) 70%
+  );
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+}
+
+.main-heading {
+  font-size: 3rem;
+  font-weight: 700;
+  line-height: 1.2;
+}
+
+.feature-list {
+  list-style: none;
+  padding-left: 0;
+  font-size: 1.1rem;
+}
+
+.feature-list li {
+  margin-bottom: 10px;
+  color: #aaa;
+}
+
+.feature-list li strong {
+  color: white;
+}
+
+.feature-note {
+  background: rgba(50, 60, 70, 0.6);
+  color: #d0d0d0;
+  font-size: 0.9rem;
+  max-width: 90%;
+  border-radius: 6px;
+}
