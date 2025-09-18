@@ -29,13 +29,17 @@ const BreadcrumbNav = ({ extra = [] }) => {
 
   return (
     <Breadcrumb className="custom-breadcrumb">
-      <Breadcrumb.Item linkAs={Link} linkProps={{ to: "/" }} className="fw-bold">
+      <Breadcrumb.Item
+        linkAs={Link}
+        linkProps={{ to: "/" }}
+        className="fw-bold"
+      >
         <IoHome className="mb-1" /> Home
       </Breadcrumb.Item>
 
       {breadcrumbs.map((crumb, index) =>
         crumb.isLast ? (
-          <Breadcrumb.Item active key={index}>
+          <Breadcrumb.Item active key={index} className="text-white">
             {crumb.name}
           </Breadcrumb.Item>
         ) : (
@@ -43,6 +47,7 @@ const BreadcrumbNav = ({ extra = [] }) => {
             key={index}
             linkAs={Link}
             linkProps={{ to: crumb.to }}
+            className="text-white"
           >
             {crumb.name}
           </Breadcrumb.Item>

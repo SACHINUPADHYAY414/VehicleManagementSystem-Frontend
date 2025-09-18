@@ -238,37 +238,46 @@ const CarFeatures = () => {
 
   return (
     <div>
-      {/* First Page */}
-      <VideoSection videoSrc="https://www.nexaexperience.com/adobe/assets/urn:aaid:aem:82826289-cc2c-471c-baeb-48a4e8096b57/renditions/original/as/YY8%2030SEC%20A%20BROKER%20and%20DRUMMER%20CLEAN%20HD%20NEW.mp4">
-        <h2 className="fw-light">Introducing The Electric SUV</h2>
-        <img
-          src="https://www.nexaexperience.com/adobe/assets/urn:aaid:aem:362d415d-9d9e-4bd4-9e84-8c9327f521b0/as/e-vitara-logo-6.svg"
-          alt="eVitara Logo"
-          className="mb-3 hero-logo"
-        />
-        <p className="lead fst-italic">Spark Your eMagination</p>
+      <div
+        className="d-flex justify-content-center align-items-center"
+        style={{
+          height: "90vh",
+          backgroundImage: 'url("/assets/landingBg.jpg")',
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat"
+        }}
+      >
+        <div className="container">
+          <h2 className="fw-light pb-2">Introducing The Electric SUV</h2>
+          <img
+            src="https://www.nexaexperience.com/adobe/assets/urn:aaid:aem:362d415d-9d9e-4bd4-9e84-8c9327f521b0/as/e-vitara-logo-6.svg"
+            alt="eVitara Logo"
+            className="mb-3 hero-logo"
+          />
+          <p className="lead fst-italic">Spark Your eMagination</p>
+          <div className="d-flex gap-4 mt-4">
+            <div>
+              <div className="fw-bold">Pure Electric</div>
+              <div className="text-uppercase small">Platform</div>
+            </div>
+            <div>
+              <div className="fw-bold">61 kWh</div>
+              <div className="text-uppercase small">Battery</div>
+            </div>
+            <div>
+              <div className="fw-bold">500 km*</div>
+              <div className="text-uppercase small">Range</div>
+            </div>
+          </div>
 
-        <div className="d-flex gap-4 mt-4">
           <div>
-            <div className="fw-bold">Pure Electric</div>
-            <div className="text-uppercase small">Platform</div>
-          </div>
-          <div>
-            <div className="fw-bold">61 kWh</div>
-            <div className="text-uppercase small">Battery</div>
-          </div>
-          <div>
-            <div className="fw-bold">500 km*</div>
-            <div className="text-uppercase small">Range</div>
+            <Button variant="light" className="mt-4 fw-bold rounded-pill px-4">
+              Register your interest →
+            </Button>
           </div>
         </div>
-
-        <div>
-          <Button variant="light" className="mt-4 fw-bold rounded-pill px-4">
-            Register your interest →
-          </Button>
-        </div>
-      </VideoSection>
+      </div>
 
       {/* Second Page */}
       <VideoSection

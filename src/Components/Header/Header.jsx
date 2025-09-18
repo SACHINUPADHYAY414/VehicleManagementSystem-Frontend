@@ -17,6 +17,7 @@ import { SUCCESS_MSG } from "../../Utils/strings";
 import { RiAccountCircleLine } from "react-icons/ri";
 import * as bootstrap from "bootstrap";
 import { CLEAR_SELECT_CAR } from "../../Redux/buyCar";
+import api from "../../Action/Api";
 
 const NavbarEMT = () => {
   const [isOffcanvasOpen, setIsOffcanvasOpen] = useState(false);
@@ -24,10 +25,37 @@ const NavbarEMT = () => {
   const { customToast } = useToastr();
   const user = useSelector((state) => state.login?.login_data?.user);
 
+  const [cars, setCars] = useState([]);
   const loginData = useSelector((state) => state.login?.login_data);
   const isLoggedIn = !!loginData?.token;
+  const [error, setError] = useState(null);
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    const fetchCars = async () => {
+      try {
+        const response = await api.get("/api/vehicles/all");
+        const carsWithData = response.data.map((car) => ({
+          ...car,
+          brand: car.model.split(" ")[0],
+          type: car.type,
+          year: car.year
+        }));
+
+        setCars(carsWithData);
+      } catch (err) {
+        setError(
+          err.response?.data?.message || err.message || "Failed to fetch cars"
+        );
+      }
+    };
+
+    fetchCars();
+  }, []);
+
+  const brands = Array.from(new Set(cars.map((car) => car.brand)));
+
   const handleLoginClick = () => {
     closeOffcanvas();
     navigate("/login");
@@ -52,7 +80,6 @@ const NavbarEMT = () => {
     dispatch({ type: CLEAR_LOGIN_DATA });
     persistor.purge();
     dispatch({ type: CLEAR_SELECT_CAR });
-
     closeOffcanvas();
     customToast({
       severity: "success",
@@ -134,7 +161,7 @@ const NavbarEMT = () => {
                 ☰
               </button>
               <div className="bottom-menu d-none d-md-flex justify-content-center gap-3 align-items-center">
-                {/* New Cars Dropdown */}
+                {/* ✅ New Cars Dropdown */}
                 <div className="dropdown">
                   <span
                     className="menu-item dropdown-toggle"
@@ -146,27 +173,25 @@ const NavbarEMT = () => {
                     <FaTaxi
                       style={{ verticalAlign: "middle", marginRight: "6px" }}
                     />
-                    New Cars
+                     Cars
                   </span>
                   <ul
                     className="dropdown-menu"
                     aria-labelledby="newCarsDropdown"
                   >
                     <li>
-                      <NavLink className="dropdown-item" to="/car-fetures">
-                        Sedan
-                      </NavLink>
+                      <h6 className="dropdown-header">By Brand</h6>
                     </li>
-                    <li>
-                      <NavLink className="dropdown-item" to="/car-fetures">
-                        SUV
-                      </NavLink>
-                    </li>
-                    <li>
-                      <NavLink className="dropdown-item" to="/car-fetures">
-                        Hatchback
-                      </NavLink>
-                    </li>
+                   {brands.slice(0, 5).map((brand) => (
+                      <li key={brand}>
+                        <NavLink
+                          className="dropdown-item"
+                          to={`/cars?brand=${brand}`}
+                        >
+                          {brand}
+                        </NavLink>
+                      </li>
+                    ))}
                   </ul>
                 </div>
 
@@ -216,7 +241,7 @@ const NavbarEMT = () => {
                     aria-expanded="false"
                     style={{ cursor: "pointer" }}
                   >
-                    <FaTaxi
+                    <FaTags
                       style={{ verticalAlign: "middle", marginRight: "6px" }}
                     />
                     Offers
@@ -279,6 +304,8 @@ const NavbarEMT = () => {
                     </li>
                   </ul>
                 </div>
+
+                {/* User Info */}
                 <span
                   className="fw-bold mb-1"
                   style={{
@@ -286,12 +313,12 @@ const NavbarEMT = () => {
                     fontSize: "1.1rem"
                   }}
                 >
-                  {user?.firstName} {user?.lastName}
+                  {user?.name}
                 </span>
                 {isLoggedIn ? (
                   <div className="dropdown">
                     <button
-                      className="btn btn-link p-0"
+                      className="btn btn-link"
                       id="userDropdown"
                       data-bs-toggle="dropdown"
                       aria-expanded="false"
@@ -299,7 +326,7 @@ const NavbarEMT = () => {
                       <RiAccountCircleLine size={34} className="text-primary" />
                     </button>
                     <ul
-                      className="dropdown-menu dropdown-menu-end"
+                      className="dropdown-menu dropdown-menu-start"
                       aria-labelledby="userDropdown"
                     >
                       <li>
@@ -334,7 +361,7 @@ const NavbarEMT = () => {
         </div>
       </div>
 
-      {/* Offcanvas */}
+      {/* ✅ Offcanvas Menu */}
       <div
         className="offcanvas offcanvas-start d-block d-md-none"
         tabIndex="-1"
@@ -344,9 +371,7 @@ const NavbarEMT = () => {
         <div className="offcanvas-header">
           <h5 className="offcanvas-title" id="offcanvasNavbarLabel">
             <span style={{ color: "#007bff", fontWeight: "bold" }}>
-              {user?.firstName || user?.lastName
-                ? `${user?.firstName ?? ""} ${user?.lastName ?? ""}`.trim()
-                : "Home"}
+              {user && user.name ? user.name : "Home"}
             </span>
           </h5>
           <button
@@ -357,7 +382,7 @@ const NavbarEMT = () => {
           ></button>
         </div>
         <div className="offcanvas-body position-relative">
-          <ul className="navbar-nav justify-content-end flex-grow-1 pe-3">
+          <ul className="navbar-nav justify-content-end flex-grow-1">
             {user ? (
               <li className="nav-item">
                 <NavLink

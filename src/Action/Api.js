@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: import.meta.env.VITE_LOCAL_API,
+  baseURL: import.meta.env.VITE_LOCAL_API ,
   headers: {
     "Content-Type": "application/json",
   },
@@ -9,6 +9,7 @@ const api = axios.create({
 
 let storeToken = null;
 let toastFn = null;
+
 export const setToastHandler = (fn) => {
   toastFn = fn;
 };

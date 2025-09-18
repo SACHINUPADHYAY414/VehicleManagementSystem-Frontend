@@ -165,15 +165,35 @@ const Login = () => {
     setErrors(tempErrors);
     if (Object.keys(tempErrors).length === 0) {
       try {
-        const response = await api.post("/auth/login", formData);
-        const firstName = response.data.user.firstName;
-        const lastName = response.data.user.lastName;
-
+        const response = await api.post("/api/auth/login", formData);
+        const {
+          name,
+          email,
+          gender,
+          title,
+          dob,
+          mobileNumber,
+          country,
+          city,
+          state,
+          pinCode
+        } = response.data;
         dispatch({
           type: SET_LOGIN_DATA,
           payload: {
             token: response.data.token,
-            user: { firstName, lastName }
+            user: {
+              name,
+              email,
+              gender,
+              title,
+              dob,
+              mobileNumber,
+              country,
+              city,
+              state,
+              pinCode
+            }
           }
         });
         navigate(from, { replace: true });

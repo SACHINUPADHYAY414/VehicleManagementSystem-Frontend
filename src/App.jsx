@@ -15,6 +15,7 @@ import { OPPS_MSG, SESSION_EXPIRE } from "./Utils/strings";
 import Checkout from "./Pages/Checkout/Checkout";
 import CarFilters from "./Pages/CarFiltters/CarFiltters";
 import CarFeatures from "./Pages/CarFeatures/CarFeatures";
+import AllCars from "./Pages/AllCars/AllCars";
 
 const App = () => {
   const { customToast } = useToastr();
@@ -102,18 +103,18 @@ const App = () => {
   useEffect(() => {
     setToastHandler(customToast);
   }, []);
-  
+
   return (
     <Routes>
       <Route path="/" element={<Layout config={config} />}>
-        {/* Public routes */}
         <Route index element={<Home config={config} />} />
         <Route path="login" element={<Login />} />
         <Route path="register" element={<Register />} />
-        <Route path="*" element={<PageNotFound />} />
-        <Route path="cars" element={<CarFilters/>}/>
-        <Route path="car-fetures" element={<CarFeatures/>}/>
-        
+        <Route path="car" element={<CarFilters />} />
+        <Route path="car-fetures" element={<CarFeatures />} />
+        <Route path="cars" element={<AllCars />} />
+        <Route path="checkout" element={<Checkout />} />
+
         <Route
           path="checkout"
           element={
@@ -122,6 +123,8 @@ const App = () => {
             </ProtectedRoute>
           }
         />
+
+        <Route path="*" element={<PageNotFound />} />
       </Route>
     </Routes>
   );

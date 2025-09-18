@@ -1,13 +1,13 @@
 import AnimatedLanding from "../../AnimatedLanding/AnimatedLanding";
 import WhyBookWithUs from "../../Components/WhyBookWithUs/WhyBookWithUs";
+import CarFeatures from "../CarFeatures/CarFeatures";
 import CarFiltters from "../CarFiltters/CarFiltters";
 import ExclusiveOffers from "../ExclusiveOffers/ExclusiveOffers";
-import { Row, Col } from "react-bootstrap";
 
 const Home = () => {
   return (
     <>
-      <div className="hero-section position-relative">
+      <div className="hero-section position-relative" style={{minHeight:"90vh"}}>
         {/* LEFT CONTENT */}
         <div className="hero-overlay-content text-white">
           <img
@@ -36,22 +36,12 @@ const Home = () => {
         ></video>
       </div>
 
-      <div
-        className="justify-content-center align-items-center"
-        style={{
-          height: "80vh",
-          backgroundImage: 'url("/assets/landingBg.jpg")',
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundRepeat: "no-repeat"
-        }}
-      ></div>
-
       <div>
         <AnimatedLanding />
         <CarFiltters />
-        <ExclusiveOffers />
-        <WhyBookWithUs />
+        <CarFeatures/>
+        {/* <ExclusiveOffers /> */}
+        {/* <WhyBookWithUs /> */}
       </div>
     </>
   );

@@ -2,106 +2,47 @@ import React from "react";
 import { NavLink } from "react-router-dom";
 
 const footerData = {
-  verticalMenu: [
-    { name: "OUR OFFERINGS", path: "/our-offerings" },
-    { name: "QUICK LINKS", path: "/quick-links" },
-    { name: "POPULAR DESTINATION", path: "/popular-destination" },
-    { name: "INTERNATIONAL DESTINATION", path: "/international-destination" },
-    { name: "POPULAR AIRLINE", path: "/popular-airline" },
-    { name: "CONNECT WITH US", path: "/connect-with-us" },
-    { name: "CURRENT OPENINGS", path: "/current-openings" }
-  ],
   columns: [
     {
-      title: "Quick solutions for all your travel needs.",
-      groups: [
-        [
-          { name: "Flight by City", path: "/flight-by-city" },
-          { name: "Train Routes", path: "/train-routes" },
-          {
-            name: "New Delhi to Bengaluru Flights",
-            path: "/flights/new-delhi-bengaluru"
-          },
-          {
-            name: "Mumbai to Bengaluru Flights",
-            path: "/flights/mumbai-bengaluru"
-          },
-          { name: "Dubai to Mumbai Flights", path: "/flights/dubai-mumbai" },
-          {
-            name: "Secunderabad to Vijayawada Trains",
-            path: "/trains/secunderabad-vijayawada"
-          },
-          {
-            name: "Howrah To Durgapur Trains",
-            path: "/trains/howrah-durgapur"
-          },
-          {
-            name: "Guwahati to New Jalpaiguri Trains",
-            path: "/trains/guwahati-new-jalpaiguri"
-          }
-        ],
-        [
-          { name: "Lowest Airfare Calendar", path: "/lowest-airfare-calendar" },
-          { name: "Holiday Packages", path: "/holiday-packages" },
-          {
-            name: "New Delhi to Mumbai Flights",
-            path: "/flights/new-delhi-mumbai"
-          },
-          {
-            name: "New Delhi to Bangkok Flights",
-            path: "/flights/new-delhi-bangkok"
-          },
-          {
-            name: "Kolkata to Bangkok Flights",
-            path: "/flights/kolkata-bangkok"
-          },
-          { name: "Borivali to Surat Trains", path: "/trains/borivali-surat" },
-          {
-            name: "Kanpur to Mangalore Trains",
-            path: "/trains/kanpur-mangalore"
-          },
-          { name: "Japan Tourism", path: "/tourism/japan" }
-        ],
-        [
-          { name: "Domestic Flights", path: "/domestic-flights" },
-          { name: "Hotel Directory", path: "/hotel-directory" },
-          {
-            name: "Mumbai to New Delhi Flights",
-            path: "/flights/mumbai-new-delhi"
-          },
-          { name: "Mumbai to Dubai Flights", path: "/flights/mumbai-dubai" },
-          {
-            name: "London to New Delhi Flights",
-            path: "/flights/london-new-delhi"
-          },
-          {
-            name: "Mumbai CST to Pune Trains",
-            path: "/trains/mumbai-cst-pune"
-          },
-          { name: "Pune to Thane Trains", path: "/trains/pune-thane" },
-          { name: "Dubai Tourism", path: "/tourism/dubai" }
-        ],
-        [
-          { name: "International Flights", path: "/international-flights" },
-          {
-            name: "Bengaluru to New Delhi Flights",
-            path: "/flights/bengaluru-new-delhi"
-          },
-          { name: "New Delhi to Goa Flights", path: "/flights/new-delhi-goa" },
-          {
-            name: "New Delhi to Dubai Flights",
-            path: "/flights/new-delhi-dubai"
-          },
-          { name: "Howrah to Puri Trains", path: "/trains/howrah-puri" },
-          { name: "Howrah to Asansol Trains", path: "/trains/howrah-asansol" },
-          { name: "Jaipur to Ajmer Trains", path: "/trains/jaipur-ajmer" }
-        ]
+      title: "Company",
+      links: [
+        { name: "About Us", path: "/about" },
+        { name: "Careers", path: "/careers" },
+        { name: "Blog", path: "/blog" },
+        { name: "Contact", path: "/contact" }
+      ]
+    },
+    {
+      title: "Sell Your Car",
+      links: [
+        { name: "Sell My Car", path: "/sell-car" },
+        { name: "Car Valuation", path: "/car-valuation" },
+        { name: "How It Works", path: "/how-it-works" },
+        { name: "Dealer Locator", path: "/dealers" }
+      ]
+    },
+    {
+      title: "Buy Cars",
+      links: [
+        { name: "New Cars", path: "/new-cars" },
+        { name: "Used Cars", path: "/used-cars" },
+        { name: "Car Financing", path: "/financing" },
+        { name: "Car Reviews", path: "/reviews" }
+      ]
+    },
+    {
+      title: "Support",
+      links: [
+        { name: "FAQs", path: "/faqs" },
+        { name: "Help Center", path: "/help" },
+        { name: "Terms & Conditions", path: "/terms" },
+        { name: "Privacy Policy", path: "/privacy" }
       ]
     }
   ],
   logo: "/images/VehicleHub-logo.png",
   description:
-    "VehicleHub offers 'End to End' travel solutions including air tickets for more than 400 international and domestic airlines, hotel bookings for nearly 1 million hotels in India and abroad, cab booking with 4000+ cab operators, bus tickets with 2000+ bus operators, and railway tickets in India for all major cities.",
+    "VehicleHub offers the best platform to buy and sell cars with ease, trusted dealers, and hassle-free financing options.",
   appBadges: [
     { href: "#", imgSrc: "/assets/PlayStore.png", alt: "Google Play" },
     { href: "#", imgSrc: "/assets/AppStore.png", alt: "App Store" }
@@ -112,79 +53,63 @@ const footerData = {
 
 const Footer = () => {
   return (
-    <footer className="bg-dark text-white">
-      <div style={{ backgroundColor: "#468BE8", padding: "0.2rem" }}></div>
-      <div className="container">
-        <div className="d-none d-md-block">
-          <div className="row py-3">
-            <div className="col-md-2 border-end">
-              <ul className="nav flex-column justify-content-center">
-                {footerData.verticalMenu.map(({ name, path }, index) => (
-                  <React.Fragment key={name}>
-                    <li className="nav-item">
+    <footer className="position-relative text-white">
+      {/* Background video */}
+      <video
+        className="position-absolute top-0 start-0 w-100 h-100"
+        autoPlay
+        loop
+        muted
+        playsInline
+        poster="https://res.cloudinary.com/dt9kb92su/image/upload/v1757514344/13495-248644905_myuek5.jpg"
+        style={{ objectFit: "cover", zIndex: -1 }}
+      >
+        <source
+          src="https://res.cloudinary.com/dt9kb92su/video/upload/v1757514344/13495-248644905_myuek5.mp4"
+          type="video/mp4"
+        />
+      </video>
+
+      <div
+        className="position-absolute top-0 start-0 w-100 h-100"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.6)", zIndex: -1 }}
+      ></div>
+
+      <div className="container d-flex flex-column justify-content-center align-items-center">
+        <div className="d-none d-md-block w-100 mt-4">
+          <div className="d-flex justify-content-between">
+            {footerData.columns.map((col, idx) => (
+              <div key={idx} style={{ flexBasis: "10%" }}>
+                <h6 className="fw-semibold text-white mb-2">{col.title}</h6>
+                <ul className="list-unstyled">
+                  {col.links.map((link, linkIdx) => (
+                    <li key={linkIdx} className="mb-2">
                       <NavLink
-                        to={path}
+                        to={link.path}
                         className={({ isActive }) =>
-                          "nav-link d-flex align-items-center small-text" +
-                          (isActive
-                            ? "active text-primary small-text"
-                            : " text-white-50")
+                          "nav-link small px-0" +
+                          (isActive ? " text-primary" : " text-white-50")
                         }
-                        tabIndex={0}
                       >
-                        {name}
-                        {name === "CURRENT OPENINGS" && (
-                          <span className="badge bg-danger ms-2">NEW</span>
-                        )}
+                        {link.name}
                       </NavLink>
                     </li>
-                    {index !== footerData.verticalMenu.length - 1 && (
-                      <hr className="my-1 text-white-50" />
-                    )}
-                  </React.Fragment>
-                ))}
-              </ul>
-            </div>
-
-            <div className="col-md-10">
-              <h5 className="fw-semibold mb-2">
-                {footerData.columns[0].title}
-              </h5>
-              <div className="row mx-1">
-                {footerData.columns[0].groups.map((group, groupIdx) => (
-                  <div key={groupIdx} className="col-6 col-md-3 mb-1">
-                    <ul className="list-unstyled fs-6 text-white-50">
-                      {group.map(({ name, path }, linkIdx) => (
-                        <li key={linkIdx} className="mb-1">
-                          <NavLink
-                            to={path}
-                            className={({ isActive }) =>
-                              "nav-link d-flex align-items-center" +
-                              (isActive
-                                ? " active text-primary"
-                                : " text-white-50")
-                            }
-                            tabIndex={0}
-                          >
-                            {name}
-                          </NavLink>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
+                  ))}
+                </ul>
               </div>
-            </div>
+            ))}
           </div>
 
-          <hr className="border-secondary" />
+          <hr className="border-secondary mt-0" />
+        </div>
 
-          {/* Bottom Row */}
+        {/* Bottom Row */}
+        <div className="d-none d-md-block w-100">
           <div className="row align-items-center">
             <div className="col-md-6">
               <div className="d-flex flex-column align-items-start">
                 <div className="d-flex align-items-center">
-                  <h5 className="mb-0 me-2">
+                  <h5 className="mb-1 me-2">
                     <span className="fw-bold">VehicleHub</span>
                     <span style={{ fontSize: "0.7rem", fontWeight: "bold" }}>
                       .com
@@ -216,13 +141,13 @@ const Footer = () => {
                 </div>
               </div>
 
-              <div className="text-center">
+              <div className="text-center d-flex flex-column justify-content-md-end align-items-center">
                 <p className="small fw-semibold mb-1">SCAN QR CODE</p>
                 <img
                   src={footerData.qrCode}
                   alt="QR"
                   className="img-fluid"
-                  style={{ height: "80px" }}
+                  style={{ height: "50px", filter: "invert(100%)" }}
                 />
               </div>
             </div>
@@ -231,7 +156,7 @@ const Footer = () => {
           <hr className="border-secondary my-1" />
         </div>
 
-        {/* Mobile copyright */}
+        {/* Mobile copyright remains as is */}
         <div className="text-center text-white-50 small d-block d-md-none py-1">
           {footerData?.copyright}
           <div className="d-flex justify-content-center align-items-center mt-1">
@@ -244,9 +169,8 @@ const Footer = () => {
             </NavLink>
           </div>
         </div>
-
-        {/* Desktop copyright */}
-        <div className="d-none small text-white-50 d-md-flex justify-content-center align-items-center py-1">
+        {/* Desktop copyright - placed here between */}
+        <div className="d-none small text-white-50 d-md-flex justify-content-between align-items-center w-100 py-2">
           <div>{footerData.copyright}</div>
           <div className="text-center ms-3 d-flex">
             Created by{" "}

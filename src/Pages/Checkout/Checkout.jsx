@@ -3,301 +3,247 @@ import {
   Container,
   Row,
   Col,
-  Card,
-  Badge,
+  Form,
   Button,
-  Form
+  Card,
+  Badge
 } from "react-bootstrap";
+import { useLocation } from "react-router-dom";
 import BreadcrumbNav from "../../Components/Breadcrumb/Breadcrumb";
-import { cars } from "../../Data/carsData";
-import { MdEventSeat } from "react-icons/md";
-import { SiTransmission } from "react-icons/si";
-import { OPPS_MSG, SERVER_ERROR, SUCCESS_MSG } from "../../Utils/strings";
-import { useToastr } from "../../Components/Toastr/ToastrProvider";
 import api from "../../Action/Api";
+import { useToastr } from "../../Components/Toastr/ToastrProvider";
+import { OPPS_MSG, SERVER_ERROR, SUCCESS_MSG } from "../../Utils/strings";
 import { useSelector } from "react-redux";
 
 const Checkout = () => {
-  const [activeTab, setActiveTab] = useState("overview");
-  const carId = useSelector((state) => state.selectedCar.carId);
+  const location = useLocation();
+  const carId = location.state?.carId;
   const { customToast } = useToastr();
-  const [car, setCar] = useState(null);
-  const [discountPercent, setDiscountPercent] = useState(0);
 
-  const gst = 200;
+  const [car, setCar] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const user = useSelector((state) => state.login?.login_data?.user);
 
   const [formData, setFormData] = useState({
-    userId: 7,
+    userId: null,
     vehicleId: null,
+    fuel: "Petrol",
+    variant: "",
+    color: "",
+    pan: "",
     amount: 0,
     method: "UPI"
   });
 
-  const coupons = [
-    {
-      code: "DISC10",
-      description: "10% off on base fare",
-      badgeProps: { bg: "success", text: "light" }
-    },
-    {
-      code: "DISC11",
-      description: "15% off on base fare",
-      badgeProps: { bg: "success", text: "light" }
-    }
-  ];
-
-  const [selectedCoupon, setSelectedCoupon] = useState("");
-
   useEffect(() => {
-    if (carId) {
-      const foundCar = cars.find((c) => c.id === carId);
-      if (foundCar) {
-        const matchedCoupon = coupons.find(
-          (coupon) => coupon.code === selectedCoupon
-        );
-        const discount = matchedCoupon
-          ? parseInt(matchedCoupon.description.match(/(\d+)%/)[1], 10)
-          : 0;
+    if (!carId) return;
+    const fetchCar = async () => {
+      try {
+        setLoading(true);
+        const response = await api.get(`/api/vehicles/${carId}`);
+        const carData = response.data;
+        setCar(carData);
 
-        setCar({ ...foundCar, features: foundCar.features || [] });
-
-        const discountedPrice = foundCar.price * (1 - discount / 100);
-        const total = discountedPrice + gst;
-
+        // Update form with vehicle info
         setFormData((prev) => ({
           ...prev,
-          vehicleId: foundCar.id,
-          amount: total
+          vehicleId: carData?.id || null,
+          amount: carData?.price || 0
         }));
-
-        setDiscountPercent(discount);
-      } else {
-        setCar(null);
+      } catch (error) {
+        console.error(error);
+      } finally {
+        setLoading(false);
       }
-    }
-  }, [carId, selectedCoupon]);
-
-  const applyCoupon = (code) => {
-    setSelectedCoupon(code);
-  };
-
-  useEffect(() => {
-    if (carId) {
-      const foundCar = cars.find((c) => c.id === carId);
-      setCar(foundCar || null);
-    }
-  }, [carId]);
-
-  if (!carId) return <div>Please select a car first!</div>;
-  if (!car) return <div>Loading car details...</div>;
-
-  const discountedPrice = car.price * (1 - discountPercent / 100);
-  const totalPrice = discountedPrice + gst;
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    const payload = {
-      userId: formData.userId,
-      vehicleId: formData.vehicleId,
-      amount: totalPrice,
-      method: formData.method
     };
 
-    try {
-      await api.post("/payment/initiate", payload);
+    fetchCar();
+  }, [carId]);
 
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = async () => {
+    try {
+      await api.post("/payment/initiate", formData);
       customToast({
         severity: "success",
         summary: SUCCESS_MSG,
-        detail: "Payment initiated successfully.",
-        life: 3000,
-        sticky: false,
-        closable: true
+        detail: "Booking successful!"
       });
     } catch (error) {
       customToast({
         severity: "error",
         summary: OPPS_MSG,
-        detail: error.response?.data?.message || error.message || SERVER_ERROR,
-        life: 3000,
-        sticky: false,
-        closable: true
+        detail: error.response?.data?.message || SERVER_ERROR
       });
     }
   };
 
+  if (loading)
+    return <div className="text-center py-5">Loading car details...</div>;
+  if (!car) return <div className="text-center py-5">Car not found!</div>;
+
   return (
-    <Container className="py-4">
-      <BreadcrumbNav extra={[{ name: "Payment" }]} />
+    <div style={{ background: "#0d0d0d", color: "#fff", minHeight: "90vh" }}>
+      <Container className="py-2" style={{ minHeight: "90vh" }}>
+        <BreadcrumbNav extra={[{ name: "Booking" }]} />
+        <Row className="g-4 align-items-center">
+          <Col md={6} className="text-center">
+            <div className="p-0 m-0">
+              <img
+                src={
+                  car?.imageUrl ||
+                  "https://d31sro4iz4ob5n.cloudfront.net/upload/car/city-2024/color/lhd-lx-platinum-white-pearl/1.png?v=570974139"
+                }
+                alt={car?.model || "Car image"}
+                style={{
+                  width: "100%",
+                  maxHeight: "550px",
+                  objectFit: "contain",
+                  display: "block",
+                  margin: 0,
+                  padding: 0,
+                  backgroundColor: "transparent",
+                  filter: "drop-shadow(0 0 5px rgba(0,0,0,0.3))"
+                }}
+              />
+            </div>
+          </Col>
 
-      <Row>
-        <Col md={4}>
-          <div className="d-flex flex-wrap gap-3 align-items-center rounded mb-3">
-            <img
-              src={car.image}
-              alt={`${car.brand} ${car.model}`}
-              style={{
-                width: "100%",
-                maxHeight: "31.5vh",
-                objectFit: "cover",
-                borderRadius: "0.5rem"
-              }}
-            />
-          </div>
-
-          <Card className="mb-3">
-            <Card.Header className="bg-info text-white fw-bold">
-              Offers & Promo Code
-            </Card.Header>
-            <Card.Body>
-              {coupons.map((coupon) => (
-                <div
-                  key={coupon.code}
-                  className={`p-2 mt-2 border rounded ${
-                    selectedCoupon === coupon.code ? "border-info" : "bg-light"
-                  }`}
-                >
-                  <Form.Check
-                    type="radio"
-                    id={`coupon-${coupon.code}`}
-                    name="couponRadio"
-                    value={coupon.code}
-                    label={
-                      <>
-                        <Badge
-                          bg={coupon.badgeProps.bg}
-                          text={coupon.badgeProps.text || ""}
-                          className="me-2"
-                        >
-                          {coupon.code}
-                        </Badge>
-                        {coupon.description}
-                      </>
-                    }
-                    checked={selectedCoupon === coupon.code}
-                    onChange={() => applyCoupon(coupon.code)}
-                  />
+          <Col md={6}>
+            <Card className="bg-dark text-light border-0 shadow-lg">
+              <Card.Body className="mx-2 my-2">
+                <div className="mb-2 d-flex justify-content-between align-items-center">
+                  <h4 className="fw-bold" style={{ letterSpacing: "1px" }}>
+                    Booking Details
+                  </h4>
+                  <h4
+                    style={{
+                      fontWeight: "900",
+                      background: "linear-gradient(90deg, #ff4d4d, #ff1a1a)",
+                      WebkitBackgroundClip: "text",
+                      WebkitTextFillColor: "transparent",
+                      textShadow: "1px 1px 4px rgba(0,0,0,0.5)"
+                    }}
+                  >
+                    <i className="bi bi-car-front-fill me-2"></i>
+                    {car?.model}
+                  </h4>
                 </div>
-              ))}
-            </Card.Body>
-          </Card>
-        </Col>
 
-        <Col md={8}>
-          <Card>
-            <Card.Header className="bg-info text-white fw-bold d-flex gap-3">
-              <span
-                className={`${
-                  activeTab === "overview" ? "active fw-bold text-black" : ""
-                }`}
-                onClick={() => setActiveTab("overview")}
-                style={{ cursor: "pointer", userSelect: "text" }}
-              >
-                Overview
-              </span>
-
-              <span
-                className={`nav-link ${
-                  activeTab === "specsFeatures"
-                    ? "active fw-bold text-black"
-                    : ""
-                }`}
-                onClick={() => setActiveTab("specsFeatures")}
-                style={{ cursor: "pointer", userSelect: "text" }}
-              >
-                Specs & Features
-              </span>
-            </Card.Header>
-
-            <Card.Body>
-              {activeTab === "overview" && (
-                <div>
-                  <h6 className="fw-bold mb-3">Car Overview</h6>
-                  <Row className="gy-3">
-                    <Col xs={12} sm={6}>
-                      <strong>Name:</strong> {car.brand}
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <strong>Model:</strong> {car.model}
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <strong>Fuel Type:</strong> {car.fuelType}
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <MdEventSeat className="me-2" />
-                      <strong>Seats:</strong> {car.seats}
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <strong>Engine:</strong> {car.engineDisplacement}
-                    </Col>
-                    <Col xs={12} sm={6}>
-                      <SiTransmission className="me-2" />
-                      <strong>Transmission:</strong> {car.transmission}
-                    </Col>
-                  </Row>
-                </div>
-              )}
-
-              {activeTab === "specsFeatures" && (
-                <div>
-                  <h6 className="fw-bold mb-2">Specs & Features</h6>
-                  <ul>
-                    {(car.features || []).map((feature, idx) => (
-                      <li key={idx}>{feature}</li>
+                {/* Fuel */}
+                <Form.Group className="mb-2">
+                  <div className="d-flex gap-3">
+                    {["Petrol", "Diesel"].map((fuel) => (
+                      <Form.Check
+                        key={fuel}
+                        type="radio"
+                        label={fuel}
+                        name="fuel"
+                        value={fuel}
+                        checked={formData.fuel === fuel}
+                        onChange={handleChange}
+                        className="text-light"
+                      />
                     ))}
-                  </ul>
-                </div>
-              )}
-            </Card.Body>
-          </Card>
+                  </div>
+                </Form.Group>
 
-          <Card className="mt-3 shadow-sm">
-            <Card.Header className="bg-info text-white fw-bold">
-              Price Summary
-            </Card.Header>
-            <Card.Body>
-              <Row>
-                <Col>Car Price</Col>
-                <Col className="text-end">₹{car.price.toFixed(0)}</Col>
-              </Row>
-              {discountPercent > 0 && (
-                <Row>
-                  <Col>Discount ({discountPercent}%)</Col>
-                  <Col className="text-end text-success">
-                    -₹{((car.price * discountPercent) / 100).toFixed(0)}
-                  </Col>
-                </Row>
-              )}
-              <Row>
-                <Col>GST</Col>
-                <Col className="text-end">₹{gst}</Col>
-              </Row>
-              <hr />
-              <Row>
-                <Col>
-                  <strong>Grand Total</strong>
-                </Col>
-                <Col className="text-end text-danger fw-bold">
-                  ₹{totalPrice.toFixed(0)}
-                </Col>
-              </Row>
+                {/* Variant */}
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold text-uppercase">
+                    Variant
+                  </Form.Label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {["SIGMA", "ZETA", "DELTA", "ALPHA"].map((v) => (
+                      <Button
+                        key={v}
+                        variant={
+                          formData.variant === v ? "danger" : "outline-light"
+                        }
+                        className="flex-grow-1"
+                        onClick={() =>
+                          setFormData((prev) => ({ ...prev, variant: v }))
+                        }
+                      >
+                        {v}
+                      </Button>
+                    ))}
+                  </div>
+                </Form.Group>
 
-              <div className="d-flex justify-content-end mt-3">
+                {/* Color */}
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold text-uppercase">
+                    Color
+                  </Form.Label>
+                  <div className="d-flex flex-wrap gap-2">
+                    {[
+                      "Nexa Blue (Stargaze)",
+                      "Arctic White",
+                      "Splendid Silver",
+                      "Grandeur Grey",
+                      "Opulent Red",
+                      "Midnight Black",
+                      "Chestnut Brown"
+                    ].map((c) => (
+                      <Button
+                        key={c}
+                        variant={
+                          formData.color === c ? "danger" : "outline-light"
+                        }
+                        className="text-light flex-grow-1"
+                        onClick={() =>
+                          setFormData((prev) => ({ ...prev, color: c }))
+                        }
+                      >
+                        {c}
+                      </Button>
+                    ))}
+                  </div>
+                </Form.Group>
+
+                {/* PAN */}
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-bold text-uppercase">
+                    PAN Number
+                  </Form.Label>
+                  <Form.Control
+                    type="text"
+                    name="pan"
+                    value={formData.pan}
+                    onChange={handleChange}
+                    placeholder="Enter PAN Number"
+                    className="bg-dark text-light border-secondary"
+                  />
+                </Form.Group>
+                {/* Price */}
+                <h5 className="text-end">
+                  ₹ {formData.amount?.toLocaleString() || 0}
+                </h5>
+                {/* Submit */}
                 <Button
-                  variant="info"
-                  className="text-light"
                   onClick={handleSubmit}
-                  type="button"
+                  className="w-100 fw-bold fs-5 mt-1"
+                  style={{
+                    background: "linear-gradient(90deg, #ff0000, #cc0000)",
+                    border: "none",
+                    borderRadius: "10px",
+                    boxShadow: "0 4px 20px rgba(255,0,0,0.6)"
+                  }}
                 >
                   Confirm Booking & Pay
                 </Button>
-              </div>
-            </Card.Body>
-          </Card>
-        </Col>
-      </Row>
-    </Container>
+              </Card.Body>
+            </Card>
+          </Col>
+        </Row>
+      </Container>
+    </div>
   );
 };
 

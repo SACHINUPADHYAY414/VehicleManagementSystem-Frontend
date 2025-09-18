@@ -28,11 +28,22 @@ export const PASSWORD_NOT_METCH = "Passwords do not match.";
 // Date related messages
 export const DOB_RANGE_MESSAGE =
   "Date of birth should be between January 1, 1930, and today's date. Please enter a valid date.";
+
+// Server related messages
 export const OPPS_ERROR =
   "There was an issue while processing your request. Please try again later.";
 export const SERVER_ERROR = "Failed to reach server. Please try again later.";
+export const SESSION_EXPIRE = "Your session has expired.";
+export const ERROR_PASTE_DATA = "Pasted data is invalid.";
+
+// Boolean values
 export const TRUE = "TRUE";
 export const FALSE = "FALSE";
 
-export const SESSION_EXPIRE = "Your session has been expire";
-export const ERROR_PASTE_DATA = "Pasted data is invalid.";
+// Generic success/error messages
+export const ENTER_VALID_DATA = "Please enter valid data.";
+export const SUCCESS = "Success!";
+
+// Additional Messages
+export const ERROR = "An error occurred. Please try again.";
+export const WARNING = "Warning: Please check your input.";

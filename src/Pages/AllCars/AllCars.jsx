@@ -3,9 +3,9 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import CarCard from "../../Components/CarCard/CarCard";
 import api from "../../Action/Api";
-import { Link } from "react-router-dom"; // ✅ Import Link for navigation
+import { Link, useLocation } from "react-router-dom";
 
-const CarFilters = () => {
+const AllCars = () => {
   const [cars, setCars] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,6 +16,8 @@ const CarFilters = () => {
   });
 
   const [priceRange, setPriceRange] = useState([0, 0]);
+
+  const location = useLocation();
 
   // Fetch cars
   useEffect(() => {
@@ -53,16 +55,21 @@ const CarFilters = () => {
 
     fetchCars();
   }, []);
+  
+  useEffect(() => {
+    const params = new URLSearchParams(location.search);
+    const brand = params.get("brand");
+    setFilters((prev) => ({
+      ...prev,
+      brands: brand ? [brand] : []
+    }));
+  }, [location.search]);
 
   const brands = Array.from(new Set(cars.map((car) => car.brand)));
 
   const filteredCars = cars.filter((car) => {
-    if (car.price < filters.price[0] || car.price > filters.price[1]) {
-      return false;
-    }
-    if (filters.brands.length > 0 && !filters.brands.includes(car.brand)) {
-      return false;
-    }
+    if (car.price < filters.price[0] || car.price > filters.price[1]) return false;
+    if (filters.brands.length > 0 && !filters.brands.includes(car.brand)) return false;
     return true;
   });
 
@@ -158,20 +165,14 @@ const CarFilters = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Car Cards Grid */}
         <div className="col-12 col-md-9">
-          <div className="justify-content-between align-items-center text-end">
-            {/* <h5 className="fw-bold">{filteredCars.length} Cars Found</h5> */}
-            <Link to="/cars" className="fw-semibold text-primary fs-6">
-              View All
-            </Link>
-          </div>
           <div className="row mt-3">
             {filteredCars.length === 0 ? (
               <p>No cars match the selected filters.</p>
             ) : (
-              filteredCars.slice(0, 8).map((car) => (
+              filteredCars.map((car) => (
                 <div
                   className="col-12 col-sm-6 col-md-4 col-lg-3 mb-3"
                   key={car.id}
@@ -187,4 +188,4 @@ const CarFilters = () => {
   );
 };
 
-export default CarFilters;
+export default AllCars;

@@ -14,7 +14,7 @@ const CarCard = ({ car }) => {
 
   const handleCardClick = () => {
     dispatch(setSelectedCar(car.id));
-    navigate("/checkout");
+    navigate("/checkout", { state: { carId: car.id } });
   };
 
   return (
@@ -40,7 +40,10 @@ const CarCard = ({ car }) => {
       }}
     >
       <img
-        src={car.image}
+        src={
+          car.imageUrl ||
+          "https://imgd.aeplcdn.com/1280x720/n/cw/ec/106815/creta-exterior-right-front-three-quarter-5.jpeg?isig=0&q=80"
+        }
         alt={car.model}
         style={{
           width: "100%",
@@ -63,9 +66,7 @@ const CarCard = ({ car }) => {
           }}
           title={`${car.brand} ${car.model}`}
         >
-          <span>
-            {car.brand} {car.model}
-          </span>
+          <span>{car.model}</span>
           <i
             onClick={toggleLike}
             className={liked ? "bi bi-heart-fill" : "bi bi-heart"}
@@ -77,26 +78,8 @@ const CarCard = ({ car }) => {
           ></i>
         </h6>
 
-        <p className="text-muted mb-2" style={{ fontSize: "0.85rem" }}>
-          {car.fuel} &bull; {car.transmission}
-        </p>
-        <div className="d-flex justify-content-between align-items-center">
+        <div className="align-items-center text-start">
           <h6 className="text-black fw-semibold">₹{car.price}</h6>
-          <div className="form-check" style={{ fontSize: "0.9rem" }}>
-            <input
-              className="form-check-input"
-              type="checkbox"
-              id={`compareCheck-${car.id}`}
-              style={{ cursor: "pointer" }}
-            />
-            <label
-              className="form-check-label"
-              htmlFor={`compareCheck-${car.id}`}
-              style={{ cursor: "pointer" }}
-            >
-              Compare
-            </label>
-          </div>
         </div>
         <hr style={{ margin: "0 0 1px 0", borderColor: "#e0e0e0" }} />
         <button
@@ -116,26 +99,8 @@ const CarCard = ({ car }) => {
             e.currentTarget.style.textDecoration = "none";
           }}
         >
-          View Seller Details &rarr;
+          Book Now &rarr;
         </button>
-        <span
-          className="text-muted"
-          style={{
-            fontSize: "0.8rem",
-            display: "flex",
-            alignItems: "center"
-          }}
-        >
-          <i
-            className="bi bi-geo-alt-fill"
-            style={{
-              marginRight: "6px",
-              fontSize: "0.9rem",
-              color: "#6c757d"
-            }}
-          ></i>
-          {car.location}
-        </span>
       </div>
     </div>
   );

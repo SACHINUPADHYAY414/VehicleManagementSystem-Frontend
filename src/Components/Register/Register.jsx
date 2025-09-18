@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import api from "../../Action/Api";
 import { useToastr } from "../Toastr/ToastrProvider";
 import TooltipWrapper from "../Tooltip/TooltipWrapper";
@@ -14,11 +14,16 @@ import {
   ERROR_DOUBLE_SPACE,
   DOB_RANGE_MESSAGE,
   ERROR_PASTE_DATA,
-  ERROR_MUST_LENGTH
+  ERROR_MUST_LENGTH,
+  ERROR,
+  ENTER_VALID_DATA,
+  SUCCESS,
+  OPPS_ERROR,
+  FALSE,
+  TRUE
 } from "../../Utils/strings.js";
-
-import CustomInputField from "../CustomInput/CustomInputField";
-import { Form } from "react-bootstrap";
+import CustomInputField from "../../Components/CustomInput/CustomInputField.jsx";
+import { Form, Placeholder } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 
 import {
@@ -40,26 +45,30 @@ import {
 } from "../../Utils/allValidation.js";
 import { useNavigate } from "react-router-dom";
 
-const Register = () => {
-  const navigate = useNavigate();
-  const { customToast } = useToastr();
-  const [formData, setFormData] = useState({
-    title: "",
-    firstName: "",
-    lastName: "",
-    gender: "",
-    dateOfBirth: "",
-    presentAddressLine1: "",
-    presentPincode: "",
-    presentCountry: "1",
-    presentState: "",
-    presentCity: "",
-    email: "",
-    mobileNumber: "",
-    password: ""
-  });
+const defaultFormData = {
+  title: "",
+  firstName: "",
+  lastName: "",
+  gender: "",
+  dateOfBirth: "",
+  presentAddressLine1: "",
+  presentPincode: "",
+  presentCountry: "1",
+  presentState: "",
+  presentCity: "",
+  email: "",
+  mobileNumber: "",
+  password: ""
+};
 
+const Register = () => {
+  const navigate=useNavigate();
+  const { customToast } = useToastr();
+  const [formData, setFormData] = useState(defaultFormData);
   const [errors, setErrors] = useState({});
+  const [stateList, setStateList] = useState([]);
+  const [cityList, setCityList] = useState([]);
+
   const titleList = [
     { id: "1", name: "Mr." },
     { id: "2", name: "Mrs." },
@@ -70,6 +79,7 @@ const Register = () => {
     { id: "2", name: "Female" },
     { id: "3", name: "Other" }
   ];
+
   const countryList = [
     { id: "1", name: "India" },
     { id: "2", name: "United States" },
@@ -77,366 +87,188 @@ const Register = () => {
     { id: "4", name: "Australia" }
   ];
 
-  const stateList = [
-    { id: "101", name: "Maharashtra", countryId: "1" },
-    { id: "102", name: "Delhi", countryId: "1" },
-    { id: "103", name: "Karnataka", countryId: "1" },
-    { id: "104", name: "Tamil Nadu", countryId: "1" },
-    { id: "105", name: "Uttar Pradesh", countryId: "1" },
-
-    // United States
-    { id: "201", name: "California", countryId: "2" },
-    { id: "202", name: "Texas", countryId: "2" },
-    { id: "203", name: "New York", countryId: "2" },
-    { id: "204", name: "Florida", countryId: "2" },
-    { id: "205", name: "Illinois", countryId: "2" },
-
-    // Canada
-    { id: "301", name: "Ontario", countryId: "3" },
-    { id: "302", name: "British Columbia", countryId: "3" },
-    { id: "303", name: "Quebec", countryId: "3" },
-    { id: "304", name: "Alberta", countryId: "3" },
-    { id: "305", name: "Manitoba", countryId: "3" },
-
-    // Australia
-    { id: "401", name: "New South Wales", countryId: "4" },
-    { id: "402", name: "Victoria", countryId: "4" },
-    { id: "403", name: "Queensland", countryId: "4" },
-    { id: "404", name: "Western Australia", countryId: "4" },
-    { id: "405", name: "South Australia", countryId: "4" }
-  ];
-  const cityList = [
-    // 🇮🇳 India
-    { id: "1001", name: "Mumbai", stateId: "101" },
-    { id: "1002", name: "Pune", stateId: "101" },
-    { id: "1003", name: "New Delhi", stateId: "102" },
-    { id: "1004", name: "Dwarka", stateId: "102" },
-    { id: "1005", name: "Bengaluru", stateId: "103" },
-    { id: "1006", name: "Mysuru", stateId: "103" },
-    { id: "1007", name: "Chennai", stateId: "104" },
-    { id: "1008", name: "Coimbatore", stateId: "104" },
-    { id: "1009", name: "Lucknow", stateId: "105" },
-    { id: "1010", name: "Varanasi", stateId: "105" },
-
-    // 🇺🇸 United States
-    { id: "2001", name: "Los Angeles", stateId: "201" },
-    { id: "2002", name: "San Francisco", stateId: "201" },
-    { id: "2003", name: "Houston", stateId: "202" },
-    { id: "2004", name: "Dallas", stateId: "202" },
-    { id: "2005", name: "New York City", stateId: "203" },
-    { id: "2006", name: "Buffalo", stateId: "203" },
-    { id: "2007", name: "Miami", stateId: "204" },
-    { id: "2008", name: "Orlando", stateId: "204" },
-    { id: "2009", name: "Chicago", stateId: "205" },
-    { id: "2010", name: "Springfield", stateId: "205" },
-
-    // 🇨🇦 Canada
-    { id: "3001", name: "Toronto", stateId: "301" },
-    { id: "3002", name: "Ottawa", stateId: "301" },
-    { id: "3003", name: "Vancouver", stateId: "302" },
-    { id: "3004", name: "Victoria", stateId: "302" },
-    { id: "3005", name: "Montreal", stateId: "303" },
-    { id: "3006", name: "Quebec City", stateId: "303" },
-    { id: "3007", name: "Calgary", stateId: "304" },
-    { id: "3008", name: "Edmonton", stateId: "304" },
-    { id: "3009", name: "Winnipeg", stateId: "305" },
-    { id: "3010", name: "Brandon", stateId: "305" },
-
-    // 🇦🇺 Australia
-    { id: "4001", name: "Sydney", stateId: "401" },
-    { id: "4002", name: "Newcastle", stateId: "401" },
-    { id: "4003", name: "Melbourne", stateId: "402" },
-    { id: "4004", name: "Geelong", stateId: "402" },
-    { id: "4005", name: "Brisbane", stateId: "403" },
-    { id: "4006", name: "Gold Coast", stateId: "403" },
-    { id: "4007", name: "Perth", stateId: "404" },
-    { id: "4008", name: "Fremantle", stateId: "404" },
-    { id: "4009", name: "Adelaide", stateId: "405" },
-    { id: "4010", name: "Mount Gambier", stateId: "405" }
-  ];
-
-  const formFields = [
-    {
-      label: "Title",
-      id: "title",
-      name: "title",
-      value: formData.title,
-      type: "select",
-      options: titleList,
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "Gender",
-      id: "gender",
-      name: "gender",
-      value: formData.gender,
-      type: "select",
-      options: genderList,
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "First Name",
-      id: "firstName",
-      name: "firstName",
-      value: formData.firstName,
-      type: "text",
-      placeholder: "First Name",
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "Last Name",
-      id: "lastName",
-      name: "lastName",
-      value: formData.lastName,
-      type: "text",
-      placeholder: "Last Name",
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "Date of Birth",
-      id: "dateOfBirth",
-      name: "dateOfBirth",
-      value: formData.dateOfBirth,
-      type: "date",
-      placeholder: "Date of Birth",
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "Email",
-      id: "email",
-      name: "email",
-      placeholder: "Enter your email",
-      type: "email",
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "Mobile No",
-      id: "mobileNumber",
-      name: "mobileNumber",
-      placeholder: "Enter your mobile no",
-      type: "tel",
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-
-    {
-      label: "Address",
-      id: "presentAddressLine1",
-      name: "presentAddressLine1",
-      value: formData.presentAddressLine1,
-      type: "text",
-      placeholder: "Present Address",
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "Pincode",
-      id: "presentPincode",
-      name: "presentPincode",
-      value: formData.presentPincode,
-      type: "tel",
-      placeholder: "Pincode",
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "Country",
-      id: "presentCountry",
-      name: "presentCountry",
-      value: formData.presentCountry,
-      type: "select",
-      options: countryList,
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "State",
-      id: "presentState",
-      name: "presentState",
-      value: formData.presentState,
-      type: "select",
-      options: stateList,
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "City",
-      id: "presentCity",
-      name: "presentCity",
-      value: formData.presentCity,
-      type: "select",
-      options: cityList,
-      colClass: "col-12 col-md-4",
-      required: true
-    },
-    {
-      label: "Password",
-      id: "password",
-      name: "password",
-      placeholder: "Enter strong password",
-      type: "password",
-      colClass: "col-12 col-md-4",
-      required: true
-    }
-  ];
-  const [filteredStates, setFilteredStates] = useState([]);
-  const [filteredCities, setFilteredCities] = useState([]);
-
-  useEffect(() => {
-    if (formData.presentCountry) {
-      const matchedStates = stateList.filter(
-        (state) => state.countryId === formData.presentCountry
-      );
-      setFilteredStates(matchedStates);
-      setFormData((prev) => ({ ...prev, presentState: "", presentCity: "" }));
-      setFilteredCities([]);
-    }
-  }, [formData.presentCountry]);
-
-  useEffect(() => {
-    if (formData.presentState) {
-      const matchedCities = cityList.filter(
-        (city) => city.stateId === formData.presentState
-      );
-      setFilteredCities(matchedCities);
-      setFormData((prev) => ({ ...prev, presentCity: "" }));
-    }
-  }, [formData.presentState]);
-
-  const handleChange = (e, required = false, label = "", pastedValue = "") => {
-    let { name, value } = e.target;
-
-    if (pastedValue) {
-      value = value + pastedValue;
-    }
-
-    let sanitizedValue = sanitizeInput(value);
-    let updatedValue;
-    let error = "";
-
-    switch (name) {
-      case "firstName":
-      case "lastName":
-        updatedValue = validatePersonName(sanitizedValue);
-        if (updatedValue.length > 30) {
-          error = ERROR_MAXIMUM_LENGTH(30);
-        }
-        break;
-
-      case "presentAddressLine1":
-        updatedValue = sanitizeAddress(sanitizedValue);
-        if (updatedValue.length > 250) {
-          error = ERROR_MAXIMUM_LENGTH(250);
-        }
-        break;
-
-      case "presentPincode":
-        updatedValue = sanitizeZipCode(value, 6);
-        break;
-
-      case "mobileNumber":
-        updatedValue = sanitizeMobileNumber(sanitizedValue);
-        break;
-
-      case "email":
-        updatedValue = sanitizeEmail(sanitizedValue);
-        break;
-
-      case "dateOfBirth":
-        updatedValue = sanitizedValue;
-        if (sanitizedValue && !validateDateOfBirthField(sanitizedValue)) {
-          error = DOB_RANGE_MESSAGE;
-        }
-        break;
-
-      default:
-        updatedValue = sanitizedValue;
-        break;
-    }
-
-    const specialCharRegex =
-      name === "dateOfBirth" ||
-      name === "presentPincode" ||
-      name === "mobileNumber"
-        ? start_with_char_or_number
-        : start_with_char;
-
-    if (!updatedValue && required) {
-      error = ERROR_REQUIRED(label);
-    }
-    if (specialCharRegex.test(value)) {
-      error = ERROR_LEADING_OR_TRAILING_SPACE;
-    }
-
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: updatedValue
-    }));
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: error
-    }));
-
-    if (name === "title" && sanitizedValue !== "") {
-      setFormData((prevData) => ({
-        ...prevData,
-        gender:
-          sanitizedValue === "1"
-            ? "1"
-            : sanitizedValue === "2" || sanitizedValue === "3"
-            ? "2"
-            : ""
-      }));
-    }
-
-    return;
+  const hardcodedStates = {
+    1: [
+      // India
+      {
+        stateId: "1",
+        name: "Maharashtra",
+        cities: [
+          { cityId: "1", name: "Mumbai" },
+          { cityId: "2", name: "Pune" }
+        ]
+      },
+      {
+        stateId: "2",
+        name: "Karnataka",
+        cities: [
+          { cityId: "3", name: "Bengaluru" },
+          { cityId: "4", name: "Mysuru" }
+        ]
+      }
+    ],
+    2: [
+      // United States
+      {
+        stateId: "3",
+        name: "California",
+        cities: [
+          { cityId: "5", name: "Los Angeles" },
+          { cityId: "6", name: "San Francisco" }
+        ]
+      },
+      {
+        stateId: "4",
+        name: "Texas",
+        cities: [
+          { cityId: "7", name: "Houston" },
+          { cityId: "8", name: "Dallas" }
+        ]
+      }
+    ]
   };
 
-  const onPaste = (e, required, label) => {
-    e.preventDefault();
-    const name = e.target.name;
-    const value = e.clipboardData.getData("Text");
-
-    const result = verifyPasteData(value);
-
-    if (!result.valid) {
-      setErrors((prevErrors) => ({
-        ...prevErrors,
-        [name]: ERROR_PASTE_DATA
+  useEffect(() => {
+    if (!formData.presentCountry) {
+      setStateList([]);
+      setCityList([]);
+      setFormData((prev) => ({
+        ...prev,
+        presentState: "",
+        presentCity: ""
       }));
       return;
     }
 
-    handleChange(e, required, label, value);
-  };
+    const states = hardcodedStates[formData.presentCountry] || [];
+    setStateList(states);
 
-  const formHandlers = {
-    handleChange
-  };
+    setCityList([]);
+    setFormData((prev) => ({
+      ...prev,
+      presentCity: ""
+    }));
+  }, [formData.presentCountry]);
 
-  const handleOnBlur = (e, required, label) => {
+  useEffect(() => {
+    const selectedState = stateList.find(
+      (state) => state.stateId.toString() === formData.presentState
+    );
+
+    if (selectedState?.cities) {
+      setCityList(selectedState.cities);
+    } else {
+      setCityList([]);
+    }
+
+    if (formData.presentCity) {
+      const cityExists = selectedState?.cities?.some(
+        (city) => city.cityId.toString() === formData.presentCity
+      );
+      if (!cityExists) {
+        setFormData((prev) => ({ ...prev, presentCity: "" }));
+      }
+    }
+  }, [formData.presentState, stateList]);
+
+  const selectFields = [
+    "title",
+    "gender",
+    "presentCountry",
+    "presentState",
+    "presentCity"
+  ];
+
+  const handleChange = useCallback(
+    (e, required = FALSE, label = "", pastedValue = "") => {
+      let { name, value } = e.target;
+      if (pastedValue) value += pastedValue;
+
+      // Reset city if state changes
+      if (name === "presentState") {
+        setFormData((prev) => ({
+          ...prev,
+          presentState: value,
+          presentCity: ""
+        }));
+        return;
+      }
+
+      let sanitizedValue = sanitizeInput(value);
+      let updatedValue = sanitizedValue;
+      let error = "";
+
+      if (!selectFields.includes(name)) {
+        const regex = [
+          "dateOfBirth",
+          "presentPincode",
+          "mobileNumber"
+        ].includes(name)
+          ? start_with_char_or_number
+          : start_with_char;
+
+        if (!updatedValue && required) error = ERROR_REQUIRED(label);
+        else if (regex.test(value)) error = ERROR_LEADING_OR_TRAILING_SPACE;
+
+        switch (name) {
+          case "firstName":
+          case "lastName":
+            updatedValue = validatePersonName(sanitizedValue);
+            if (updatedValue.length > 30) error = ERROR_MAXIMUM_LENGTH(30);
+            break;
+          case "presentAddressLine1":
+            updatedValue = sanitizeAddress(sanitizedValue);
+            if (updatedValue.length > 250) error = ERROR_MAXIMUM_LENGTH(250);
+            break;
+          case "presentPincode":
+            updatedValue = sanitizeZipCode(value, 6);
+            break;
+          case "mobileNumber":
+            updatedValue = sanitizeMobileNumber(sanitizedValue);
+            break;
+          case "email":
+            updatedValue = sanitizeEmail(sanitizedValue);
+            break;
+          case "dateOfBirth":
+            if (!validateDateOfBirthField(sanitizedValue))
+              error = DOB_RANGE_MESSAGE;
+            break;
+          default:
+            break;
+        }
+      }
+
+      setFormData((prev) => ({ ...prev, [name]: updatedValue }));
+      setErrors((prev) => ({ ...prev, [name]: error }));
+
+      if (name === "title") {
+        setFormData((prev) => ({
+          ...prev,
+          gender: value === "1" ? "1" : "2"
+        }));
+        setErrors((prev) => ({
+          ...prev,
+          gender: "" // clear gender error
+        }));
+      }
+    },
+    []
+  );
+
+  const handleOnBlur = useCallback((e, required, label) => {
     let { name, value } = e.target;
     let error = "";
-    let updatedValue = value;
 
-    if (value) {
-      if (
-        (name === "presentAddressLine1" ||
-          name === "firstName" ||
-          name === "lastName") &&
-        !verifyStartingOrEndingCharacters(value)
-      ) {
+    if (selectFields.includes(name)) {
+      return;
+    }
+
+    if (!value && required) {
+      error = ERROR_REQUIRED(label);
+    } else {
+      if (!verifyStartingOrEndingCharacters(value))
         error = ERROR_LEADING_OR_TRAILING_SPACE;
-      } else if (verifyDoubleSpace(value)) {
-        error = ERROR_DOUBLE_SPACE;
-      }
+      else if (verifyDoubleSpace(value)) error = ERROR_DOUBLE_SPACE;
 
       switch (name) {
         case "firstName":
@@ -457,194 +289,262 @@ const Register = () => {
           }
           break;
         case "presentPincode":
-          if (!validateLength(value, 6, 6)) {
-            error = ERROR_MUST_LENGTH(6);
-          }
+          if (!validateLength(value, 6, 6)) error = ERROR_MUST_LENGTH(6);
           break;
         case "mobileNumber":
-          if (!validateLength(value, 10, 10)) {
-            error = ERROR_MUST_LENGTH(10);
-          }
+          if (!validateLength(value, 10, 10)) error = ERROR_MUST_LENGTH(10);
           break;
         case "email":
-          if (!verifyEmail(value)) {
-            error = ERROR_VALIDATE_EMAIL;
-          }
+          if (!verifyEmail(value)) error = ERROR_VALIDATE_EMAIL;
           break;
         default:
           break;
       }
     }
 
-    if (!value && required) {
-      error = ERROR_REQUIRED(label);
-    }
+    setErrors((prev) => ({ ...prev, [name]: error }));
+  }, []);
 
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: updatedValue
-    }));
-
-    setErrors((prevErrors) => ({
-      ...prevErrors,
-      [name]: error
-    }));
-  };
-
-  useEffect(() => {
-    setErrors((prevErrors) => {
-      const updatedErrors = { ...prevErrors };
-
-      Object.keys(formFields).forEach((key) => {
-        const field = formFields[key];
-        if (field.type === "select") {
-          if (
-            formData?.[field.name] !== "" &&
-            formData?.[field.name] !== null
-          ) {
-            updatedErrors[field.name] = "";
-          }
-        }
-      });
-
-      return updatedErrors;
-    });
-  }, [formData]);
+  const onPaste = useCallback(
+    (e, required, label) => {
+      e.preventDefault();
+      const name = e.target.name;
+      const value = e.clipboardData.getData("Text");
+      const result = verifyPasteData(value);
+      if (!result.valid) {
+        setErrors((prev) => ({ ...prev, [name]: ERROR_PASTE_DATA }));
+        return;
+      }
+      handleChange(e, required, label, value);
+    },
+    [handleChange]
+  );
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     let tempErrors = {};
-    formFields.forEach((field) => {
-      const { name, label, required } = field;
+
+    formFields.forEach(({ name, label, required }) => {
       const value = formData[name];
-      if (
-        required &&
-        (value === undefined ||
-          value === null ||
-          (typeof value === "string" && value.trim() === ""))
-      ) {
+      if (required && !value?.trim()) {
         tempErrors[name] = ERROR_REQUIRED(label);
       }
     });
+
     setErrors(tempErrors);
 
     if (Object.keys(tempErrors).length > 0) {
       customToast({
-        severity: "error",
+        severity: ERROR,
         summary: OPPS_MSG,
-        detail: "Please fill all required fields correctly.",
-        life: 3000,
-        sticky: false,
-        closable: true
+        detail: ENTER_VALID_DATA,
+        life: 3000
       });
       return;
     }
-   
+
+    const mapTitleToString = (id) => {
+      switch (id) {
+        case "1":
+          return "Mr";
+        case "2":
+          return "Mrs";
+        case "3":
+          return "Ms";
+        default:
+          return "";
+      }
+    };
+
     try {
-      await api.post("/auth/register",formData);
+      const payload = {
+        title: mapTitleToString(formData.title),
+        name: `${formData.firstName} ${formData.lastName}`,
+        email: formData.email,
+        gender: formData.gender,
+        dob: formData.dateOfBirth,
+        mobileNumber: formData.mobileNumber,
+        country: formData.presentCountry,
+        city: formData.presentCity,
+        state: formData.presentState,
+        pinCode: formData.presentPincode,
+        password: formData.password
+      };
 
+      const response = await api.post("/api/auth/register", payload);
       customToast({
-        severity: "success",
+        severity: SUCCESS,
         summary: SUCCESS_MSG,
-        detail: "Registration successful. Please login.",
-        life: 3000,
-        sticky: false,
-        closable: true
+        detail: response?.data?.message,
+        life: 4000
       });
-
-      setFormData({
-        title: "",
-        firstName: "",
-        lastName: "",
-        gender: "",
-        dateOfBirth: "",
-        presentAddressLine1: "",
-        presentPincode: "",
-        presentCountry: "3",
-        presentState: "",
-        presentCity: "",
-        email: "",
-        password: ""
-      });
-      setErrors({});
-      navigate("/login");
+      navigate("/login")
     } catch (err) {
+      console.log("Error response:", err.response);
       customToast({
-        severity: "error",
+        severity: ERROR,
         summary: OPPS_MSG,
-        detail: err.response?.data?.message || "Registration failed.",
-        life: 3000,
-        sticky: false,
-        closable: true
+        detail:
+          err.response?.data?.message ||
+          err.response?.data ||
+          "Something went wrong",
+        life: 3000
       });
     }
   };
 
-  function returnControls(field) {
-    const colClass = field.colClass || "col-12 col-md-4";
-    const fieldError = errors?.[field.name];
-    const fieldValue = formData?.[field.name] ?? "";
-    const hasError = !!fieldError;
-    const errorMessage = fieldError || "";
+  const formFields = [
+    {
+      label: "Title",
+      id: "title",
+      name: "title",
+      type: "select",
+      options: titleList,
+      required: TRUE,
+      placeholder: "Select Title"
+    },
+    {
+      label: "Gender",
+      id: "gender",
+      name: "gender",
+      type: "select",
+      options: genderList,
+      required: TRUE,
+      placeholder: "Select Gender"
+    },
+    {
+      label: "First Name",
+      id: "firstName",
+      name: "firstName",
+      type: "text",
+      required: TRUE,
+      placeholder: "Enter First Name"
+    },
+    {
+      label: "Last Name",
+      id: "lastName",
+      name: "lastName",
+      type: "text",
+      required: TRUE,
+      placeholder: "Enter Last Name"
+    },
+    {
+      label: "Date of Birth",
+      id: "dateOfBirth",
+      name: "dateOfBirth",
+      type: "date",
+      required: TRUE,
+      placeholder: "Select Date of Birth"
+    },
+    {
+      label: "Email",
+      id: "email",
+      name: "email",
+      type: "email",
+      required: TRUE,
+      placeholder: "Enter Email Address"
+    },
+    {
+      label: "Mobile No",
+      id: "mobileNumber",
+      name: "mobileNumber",
+      type: "tel",
+      required: TRUE,
+      placeholder: "Enter Mobile Number"
+    },
+    {
+      label: "Password",
+      id: "password",
+      name: "password",
+      type: "password",
+      required: TRUE,
+      placeholder: "Enter Password"
+    },
+    {
+      label: "Country",
+      id: "presentCountry",
+      name: "presentCountry",
+      type: "select",
+      options: countryList,
+      required: TRUE,
+      placeholder: "Select Country"
+    },
+    {
+      label: "State",
+      id: "presentState",
+      name: "presentState",
+      type: "select",
+      options: stateList,
+      required: TRUE,
+      placeholder: "Select State"
+    },
+    {
+      label: "City",
+      id: "presentCity",
+      name: "presentCity",
+      type: "select",
+      options: cityList,
+      required: TRUE,
+      placeholder: "Select City"
+    },
+    {
+      label: "Address Line 1",
+      id: "presentAddressLine1",
+      name: "presentAddressLine1",
+      type: "text",
+      required: TRUE,
+      placeholder: "Enter Address Line 1"
+    },
+    {
+      label: "Pincode",
+      id: "presentPincode",
+      name: "presentPincode",
+      type: "text",
+      required: TRUE,
+      placeholder: "Enter Pincode"
+    }
+  ];
 
-    if (field.type === "select") {
-      const options =
-        field.name === "title"
-          ? titleList
-          : field.name === "gender"
-          ? genderList
-          : field.name === "presentCountry"
-          ? countryList
-          : field.name === "presentState"
-          ? filteredStates
-          : field.name === "presentCity"
-          ? filteredCities
-          : [];
+  const renderField = (field) => {
+    const { type, name, label, options, required, placeholder } = field;
+    const value = formData[name] || "";
+    const error = errors[name] || "";
+    const colClass = field.colClass || "col-12 col-md-3";
 
+    if (type === "select") {
       return (
-        <div
-          className={colClass}
-          key={field.id}
-          style={{ position: "relative" }}
-        >
-          <label
-            htmlFor={field.id}
-            className="form-label fw-medium required-label"
-          >
-            {field.label}
-          </label>
-
+        <div className={colClass} key={name} style={{ position: "relative" }}>
+          <label className="form-label required-label">{label}</label>
           <select
-            id={field.id}
-            name={field.name}
-            value={fieldValue}
-            onChange={(e) =>
-              formHandlers.handleChange(e, field.required, field.label)
-            }
-            onBlur={(e) => handleOnBlur(e, field.required, field.label)}
+            name={name}
+            value={value}
+            onChange={(e) => handleChange(e, required, label)}
+            onBlur={(e) => handleOnBlur(e, required, label)}
             className={`form-select ${
-              hasError ? "hasError" : fieldValue ? "is-valid" : ""
+              error ? "hasError" : value ? "is-valid" : ""
             }`}
           >
             <option value="" disabled>
-              Select
+              {placeholder}
             </option>
-            {options.map((data, index) => (
-              <option key={data.id || index} value={data.id || data[0]}>
-                {data.name || data[1]}
-              </option>
-            ))}
+            {options.map((opt) => {
+              let optionValue = opt.id || opt.stateId || opt.cityId || "";
+              return (
+                <option key={optionValue} value={optionValue}>
+                  {opt.name}
+                </option>
+              );
+            })}
           </select>
-
-          {hasError && (
-            <TooltipWrapper tooltipMessage={errorMessage}>
+          {error && (
+            <TooltipWrapper tooltipMessage={error}>
               <span
                 style={{
                   position: "absolute",
-                  right: "2.7rem",
-                  top: "50%",
-                  transform: "translateY(10%)",
+                  right: "2.1rem",
+                  top: "70%",
+                  transform: "translateY(-50%)",
                   cursor: "pointer"
                 }}
               >
@@ -656,42 +556,32 @@ const Register = () => {
       );
     }
 
-    if (
-      ["text", "tel", "email", "url", "number", "date", "password"].includes(
-        field.type
-      )
-    ) {
-      return (
-        <CustomInputField
-          key={field.id}
-          field={field}
-          colClass={colClass}
-          errors={errors}
-          formData={formData}
-          formHandlers={formHandlers}
-          allowOnlyNumbersFilter={allowOnlyNumbersFilter}
-          onPaste={(e) => onPaste(e, field.required, field.label)}
-          value={fieldValue}
-          onInput={(e) => {
-            if (e.target?.type === "number") {
-              const value = e.target.value;
-              e.target.value = allowOnlyNumbersFilter(value);
-            }
-          }}
-          onBlur={(e) => handleOnBlur(e, field.required, field.label)}
-          error={errorMessage}
-          onChange={(e) =>
-            formHandlers.handleChange(e, field.required, field.label)
+    return (
+      <CustomInputField
+        key={name}
+        field={field}
+        colClass={colClass}
+        errors={errors}
+        formData={formData}
+        formHandlers={{ handleChange }}
+        allowOnlyNumbersFilter={allowOnlyNumbersFilter}
+        onPaste={(e) => onPaste(e, required, label)}
+        value={value}
+        placeholder={Placeholder}
+        onInput={(e) => {
+          if (e.target.type === "number") {
+            e.target.value = allowOnlyNumbersFilter(e.target.value);
           }
-        />
-      );
-    }
-
-    return null;
-  }
+        }}
+        onBlur={(e) => handleOnBlur(e, required, label)}
+        error={error}
+        onChange={(e) => handleChange(e, required, label)}
+      />
+    );
+  };
 
   return (
-    <Form onSubmit={handleSubmit} noValidate>
+    <Form>
       <div
         className="container d-flex justify-content-center align-items-center my-3"
         style={{ minHeight: "87vh" }}
@@ -699,10 +589,14 @@ const Register = () => {
         <div className="card shadow p-4 w-100" style={{ maxWidth: "700px" }}>
           <h3 className="text-center mb-4 fw-bold">Register</h3>
 
-          <div className="row g-2">{formFields.map(returnControls)}</div>
-
+          <div className="row g-2">{formFields.map(renderField)}</div>
           <div className="d-grid mt-4">
-            <button type="submit" className="btn btn-primary">
+            <button
+              type="submit"
+              className="btn btn-primary"
+              // disabled={submitted}
+              onClick={handleSubmit}
+            >
               Register
             </button>
           </div>
