@@ -179,11 +179,8 @@ const NavbarEMT = () => {
                     className="dropdown-menu"
                     aria-labelledby="newCarsDropdown"
                   >
-                    <li>
-                      <h6 className="dropdown-header">By Brand</h6>
-                    </li>
                    {brands.slice(0, 5).map((brand) => (
-                      <li key={brand}>
+                      <li key={brand} className="nav-link">
                         <NavLink
                           className="dropdown-item"
                           to={`/cars?brand=${brand}`}
@@ -401,7 +398,7 @@ const NavbarEMT = () => {
 
             <li className="nav-item">
               <NavLink
-                to="/car-fetures"
+                to="/cars"
                 onClick={closeOffcanvas}
                 className={({ isActive }) =>
                   `nav-NavLink ${

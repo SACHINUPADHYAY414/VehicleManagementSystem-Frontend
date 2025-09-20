@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { setSelectedCar } from "../../Redux/buyCar";
@@ -8,11 +8,25 @@ const CarCard = ({ car }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const likedCars = JSON.parse(localStorage.getItem("likedCars")) || [];
+    setLiked(likedCars.includes(car.id));
+  }, [car.id]);
+
   const toggleLike = (e) => {
     e.stopPropagation();
+    const likedCars = JSON.parse(localStorage.getItem("likedCars")) || [];
+
+    let updatedLikes;
+    if (liked) {
+      updatedLikes = likedCars.filter((id) => id !== car.id);
+    } else {
+      updatedLikes = [...likedCars, car.id];
+    }
+
+    localStorage.setItem("likedCars", JSON.stringify(updatedLikes));
     setLiked(!liked);
   };
-
   const handleCardClick = () => {
     dispatch(setSelectedCar(car.id));
     navigate("/checkout", { state: { carId: car.id } });
@@ -46,10 +60,7 @@ const CarCard = ({ car }) => {
         }}
       >
         <img
-          src={
-            car.imageUrl ||
-            "https://imgd.aeplcdn.com/1280x720/n/cw/ec/106815/creta-exterior-right-front-three-quarter-5.jpeg?isig=0&q=80"
-          }
+          src={car.imageUrl || "https://imgd.aeplcdn.com/1280x720/n/cw/ec/106815/creta-exterior-right-front-three-quarter-5.jpeg?isig=0&q=80"}
           alt={car.model}
           style={{
             width: "100%",
@@ -93,7 +104,7 @@ const CarCard = ({ car }) => {
             className={liked ? "bi bi-heart-fill" : "bi bi-heart"}
             style={{
               color: liked ? "#dc3545" : "#6c757d",
-              fontSize: "1.5rem",
+              fontSize: "1.1rem",
               cursor: "pointer",
               transition: "color 0.25s ease",
               marginLeft: "8px",
@@ -104,35 +115,31 @@ const CarCard = ({ car }) => {
         </h6>
 
         <div
-          className="text-start"
+          className="text-start mt-1"
           style={{
             margin: 0,
             padding: 0,
             fontWeight: "700",
-            fontSize: "1.1rem",
+            fontSize: "0.9rem",
             lineHeight: 1
           }}
         >
           ₹{car.price.toLocaleString()}
         </div>
-
-        <button
-          className="btn btn-link p-0"
-          style={{
-            fontWeight: "700",
-            color: "#dc3545",
-            fontSize: "0.95rem",
-            textDecoration: "none"
-          }}
-          onMouseEnter={(e) => {
-            e.currentTarget.style.color = "#a71d2a";
-          }}
-          onMouseLeave={(e) => {
-            e.currentTarget.style.color = "#dc3545";
-          }}
-        >
-          Book Now &rarr;
-        </button>
+        <div className="mt-2 d-flex justify-content-center">
+          <button
+            className="btn text-white w-100 w-md-auto"
+            style={{
+              maxWidth: "250px",
+              padding: "2px 16px",
+              background: "linear-gradient(90deg, #ff0000, #cc0000)",
+              border: "none",
+              boxShadow: "0 4px 20px rgba(255,0,0,0.6)"
+            }}
+          >
+            Book Now &rarr;
+          </button>
+        </div>
       </div>
     </div>
   );

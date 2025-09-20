@@ -4,12 +4,15 @@ import "rc-slider/assets/index.css";
 import CarCard from "../../Components/CarCard/CarCard";
 import api from "../../Action/Api";
 import { Link } from "react-router-dom";
-import { useToastr } from "../../Components/Toastr/ToastrProvider";
 import { OPPS_MSG, SERVER_ERROR } from "../../Utils/strings";
+import { useToastr } from "../../Components/Toastr/ToastrProvider";
 
 const CarFilters = () => {
   const { customToast } = useToastr();
   const [cars, setCars] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
   const [filters, setFilters] = useState({
     price: [0, 0],
     brands: []
@@ -21,6 +24,7 @@ const CarFilters = () => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
+        setLoading(true);
         const response = await api.get("/api/vehicles/all");
         const carsWithBrand = response.data.map((car) => ({
           ...car,
@@ -40,6 +44,7 @@ const CarFilters = () => {
           brands: []
         }));
       } catch (error) {
+        setError(true);
         customToast({
           severity: "error",
           summary: OPPS_MSG,
@@ -49,6 +54,8 @@ const CarFilters = () => {
           sticky: false,
           closable: true
         });
+      } finally {
+        setLoading(false);
       }
     };
 
@@ -88,13 +95,14 @@ const CarFilters = () => {
     setFilters((prev) => ({ ...prev, price: value }));
   };
 
+  if (loading || error) return null;
+
   return (
     <div className="container-fluid mx-auto px-md-5 mt-2">
       <div className="row g-3">
-        {/* Sidebar */}
         <div className="col-12 col-md-3">
           <h5 className="fw-bold">Cars</h5>
-          <div className="card shadow-lg rounded-4 mt-3">
+          <div className="card shadow-lg rounded mt-md-3 mt-0">
             <div className="card-body">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h6 className="fw-bold mb-0">Filters</h6>
@@ -107,9 +115,9 @@ const CarFilters = () => {
               </div>
 
               {/* Price Range */}
-              <div className="mb-4">
+              <div className="mb-2">
                 <label className="form-label fw-bold">Price</label>
-                <div className="d-flex justify-content-between mb-1">
+                <div className="d-flex justify-content-between">
                   <span>₹ {filters.price[0]}</span>
                   <span>₹ {filters.price[1]}</span>
                 </div>
@@ -128,7 +136,7 @@ const CarFilters = () => {
               </div>
 
               {/* Brand Filter */}
-              <div className="mb-3">
+              <div className="mb-2">
                 <label className="form-label fw-bold">Brand</label>
                 <div
                   style={{ maxHeight: "150px", overflowY: "auto" }}
@@ -157,21 +165,19 @@ const CarFilters = () => {
           </div>
         </div>
 
-        {/* Car Cards Grid */}
         <div className="col-12 col-md-9">
           <div className="justify-content-between align-items-center text-end">
-            {/* <h5 className="fw-bold">{filteredCars.length} Cars Found</h5> */}
             <Link to="/cars" className="fw-semibold text-primary fs-6">
               View All
             </Link>
           </div>
-          <div className="row mt-2 g-2">
+          <div className="row mt-1 g-2">
             {filteredCars.length === 0 ? (
               <p>No cars match the selected filters.</p>
             ) : (
               filteredCars.slice(0, 8).map((car) => (
                 <div
-                  className="col-12 col-sm-6 col-md-4 col-lg-3"
+                  className="col-12 col-sm-6 col-md-4 col-lg-3 mb-2"
                   key={car.id}
                 >
                   <CarCard car={car} />

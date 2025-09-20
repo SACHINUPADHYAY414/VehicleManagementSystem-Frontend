@@ -13,7 +13,6 @@ import BreadcrumbNav from "../../Components/Breadcrumb/Breadcrumb";
 import api from "../../Action/Api";
 import { useToastr } from "../../Components/Toastr/ToastrProvider";
 import { OPPS_MSG, SERVER_ERROR, SUCCESS_MSG } from "../../Utils/strings";
-import { useSelector } from "react-redux";
 
 const Checkout = () => {
   const location = useLocation();
@@ -22,8 +21,6 @@ const Checkout = () => {
 
   const [car, setCar] = useState(null);
   const [loading, setLoading] = useState(true);
-
-  const user = useSelector((state) => state.login?.login_data?.user);
 
   const [formData, setFormData] = useState({
     userId: null,
@@ -45,7 +42,6 @@ const Checkout = () => {
         const carData = response.data;
         setCar(carData);
 
-        // Update form with vehicle info
         setFormData((prev) => ({
           ...prev,
           vehicleId: carData?.id || null,
@@ -84,8 +80,7 @@ const Checkout = () => {
   };
 
   if (loading)
-    return <div className="text-center py-5">Loading car details...</div>;
-  if (!car) return <div className="text-center py-5">Car not found!</div>;
+    return null;
 
   return (
     <div style={{ background: "#0d0d0d", color: "#fff", minHeight: "90vh" }}>

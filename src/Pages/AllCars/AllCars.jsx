@@ -34,11 +34,11 @@ const AllCars = () => {
         const maxPrice = Math.ceil(Math.max(...prices));
 
         setPriceRange([minPrice, maxPrice]);
-        setFilters((prev) => ({
-          ...prev,
+
+        setFilters({
           price: [minPrice, maxPrice],
           brands: []
-        }));
+        });
       } catch (error) {
         customToast({
           severity: "error",
@@ -55,9 +55,11 @@ const AllCars = () => {
     fetchCars();
   }, []);
 
+  // Update brand filter from URL params
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const brand = params.get("brand");
+
     setFilters((prev) => ({
       ...prev,
       brands: brand ? [brand] : []
@@ -67,8 +69,8 @@ const AllCars = () => {
   const brands = Array.from(new Set(cars.map((car) => car.brand)));
 
   const filteredCars = cars.filter((car) => {
-    if (car.price < filters.price[0] || car.price > filters.price[1])
-      return false;
+    const [minPrice, maxPrice] = filters.price;
+    if (car.price < minPrice || car.price > maxPrice) return false;
     if (filters.brands.length > 0 && !filters.brands.includes(car.brand))
       return false;
     return true;
@@ -96,7 +98,7 @@ const AllCars = () => {
   };
 
   return (
-    <div className="container-fluid mx-auto px-md-5">
+    <div className="container-fluid mx-auto px-md-5 mb-3">
       <div className="row g-3">
         {/* Sidebar */}
         <div className="col-12 col-md-3">
@@ -114,25 +116,27 @@ const AllCars = () => {
               </div>
 
               {/* Price Range */}
-              <div className="mb-2">
-                <label className="form-label fw-bold">Price</label>
-                <div className="d-flex justify-content-between">
-                  <span>₹ {filters.price[0]}</span>
-                  <span>₹ {filters.price[1]}</span>
+              {priceRange[0] !== priceRange[1] && (
+                <div className="mb-2">
+                  <label className="form-label fw-bold">Price</label>
+                  <div className="d-flex justify-content-between">
+                    <span>₹ {filters.price[0].toLocaleString("en-IN")}</span>
+                    <span>₹ {filters.price[1].toLocaleString("en-IN")}</span>
+                  </div>
+                  <Slider
+                    range
+                    min={priceRange[0]}
+                    max={priceRange[1]}
+                    value={filters.price}
+                    onChange={onPriceChange}
+                    trackStyle={[{ backgroundColor: "#0d6efd" }]}
+                    handleStyle={[
+                      { borderColor: "#0d6efd" },
+                      { borderColor: "#0d6efd" }
+                    ]}
+                  />
                 </div>
-                <Slider
-                  range
-                  min={priceRange[0]}
-                  max={priceRange[1]}
-                  value={filters.price}
-                  onChange={onPriceChange}
-                  trackStyle={[{ backgroundColor: "#0d6efd" }]}
-                  handleStyle={[
-                    { borderColor: "#0d6efd" },
-                    { borderColor: "#0d6efd" }
-                  ]}
-                />
-              </div>
+              )}
 
               {/* Brand Filter */}
               <div>
