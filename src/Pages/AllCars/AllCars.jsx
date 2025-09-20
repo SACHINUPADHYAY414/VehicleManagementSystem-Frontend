@@ -4,28 +4,23 @@ import "rc-slider/assets/index.css";
 import CarCard from "../../Components/CarCard/CarCard";
 import api from "../../Action/Api";
 import { Link, useLocation } from "react-router-dom";
+import { OPPS_MSG, SERVER_ERROR } from "../../Utils/strings";
+import { useToastr } from "../../Components/Toastr/ToastrProvider";
 
 const AllCars = () => {
+  const { customToast } = useToastr();
   const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   const [filters, setFilters] = useState({
     price: [0, 0],
     brands: []
   });
 
   const [priceRange, setPriceRange] = useState([0, 0]);
-
   const location = useLocation();
 
-  // Fetch cars
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        setLoading(true);
-        setError(null);
-
         const response = await api.get("/api/vehicles/all");
         const carsWithBrand = response.data.map((car) => ({
           ...car,
@@ -44,18 +39,22 @@ const AllCars = () => {
           price: [minPrice, maxPrice],
           brands: []
         }));
-      } catch (err) {
-        setError(
-          err.response?.data?.message || err.message || "Failed to fetch cars"
-        );
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        customToast({
+          severity: "error",
+          summary: OPPS_MSG,
+          detail:
+            error.response?.data?.message || error.message || SERVER_ERROR,
+          life: 3000,
+          sticky: false,
+          closable: true
+        });
       }
     };
 
     fetchCars();
   }, []);
-  
+
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const brand = params.get("brand");
@@ -68,8 +67,10 @@ const AllCars = () => {
   const brands = Array.from(new Set(cars.map((car) => car.brand)));
 
   const filteredCars = cars.filter((car) => {
-    if (car.price < filters.price[0] || car.price > filters.price[1]) return false;
-    if (filters.brands.length > 0 && !filters.brands.includes(car.brand)) return false;
+    if (car.price < filters.price[0] || car.price > filters.price[1])
+      return false;
+    if (filters.brands.length > 0 && !filters.brands.includes(car.brand))
+      return false;
     return true;
   });
 
@@ -94,18 +95,15 @@ const AllCars = () => {
     setFilters((prev) => ({ ...prev, price: value }));
   };
 
-  if (loading) return <p>Loading cars...</p>;
-  if (error) return <p>Error: {error}</p>;
-
   return (
-    <div className="container-fluid mx-auto px-md-5 mt-4">
+    <div className="container-fluid mx-auto px-md-5">
       <div className="row g-3">
         {/* Sidebar */}
-        <div className="col-12 col-md-3 mb-3">
+        <div className="col-12 col-md-3">
           <h5 className="fw-bold">Cars</h5>
-          <div className="card shadow-lg rounded-4 mt-3">
+          <div className="card shadow-lg rounded-4 mt-0 mt-md-3">
             <div className="card-body">
-              <div className="d-flex justify-content-between align-items-center mb-3">
+              <div className="d-flex justify-content-between align-items-center">
                 <h6 className="fw-bold mb-0">Filters</h6>
                 <button
                   className="btn btn-link text-primary p-0 text-decoration-none"
@@ -116,9 +114,9 @@ const AllCars = () => {
               </div>
 
               {/* Price Range */}
-              <div className="mb-4">
+              <div className="mb-2">
                 <label className="form-label fw-bold">Price</label>
-                <div className="d-flex justify-content-between mb-1">
+                <div className="d-flex justify-content-between">
                   <span>₹ {filters.price[0]}</span>
                   <span>₹ {filters.price[1]}</span>
                 </div>
@@ -137,7 +135,7 @@ const AllCars = () => {
               </div>
 
               {/* Brand Filter */}
-              <div className="mb-3">
+              <div>
                 <label className="form-label fw-bold">Brand</label>
                 <div
                   style={{ maxHeight: "150px", overflowY: "auto" }}
@@ -168,15 +166,12 @@ const AllCars = () => {
 
         {/* Car Cards Grid */}
         <div className="col-12 col-md-9">
-          <div className="row mt-3">
+          <div className="row g-2 mt-0 mt-md-3 pt-0 pt-md-3">
             {filteredCars.length === 0 ? (
               <p>No cars match the selected filters.</p>
             ) : (
               filteredCars.map((car) => (
-                <div
-                  className="col-12 col-sm-6 col-md-4 col-lg-3 mb-3"
-                  key={car.id}
-                >
+                <div className="col-12 col-sm-6 col-md-4 col-lg-3" key={car.id}>
                   <CarCard car={car} />
                 </div>
               ))

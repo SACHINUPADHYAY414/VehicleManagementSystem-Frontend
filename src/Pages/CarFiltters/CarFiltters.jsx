@@ -3,13 +3,13 @@ import Slider from "rc-slider";
 import "rc-slider/assets/index.css";
 import CarCard from "../../Components/CarCard/CarCard";
 import api from "../../Action/Api";
-import { Link } from "react-router-dom"; // ✅ Import Link for navigation
+import { Link } from "react-router-dom";
+import { useToastr } from "../../Components/Toastr/ToastrProvider";
+import { OPPS_MSG, SERVER_ERROR } from "../../Utils/strings";
 
 const CarFilters = () => {
+  const { customToast } = useToastr();
   const [cars, setCars] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-
   const [filters, setFilters] = useState({
     price: [0, 0],
     brands: []
@@ -21,9 +21,6 @@ const CarFilters = () => {
   useEffect(() => {
     const fetchCars = async () => {
       try {
-        setLoading(true);
-        setError(null);
-
         const response = await api.get("/api/vehicles/all");
         const carsWithBrand = response.data.map((car) => ({
           ...car,
@@ -42,12 +39,16 @@ const CarFilters = () => {
           price: [minPrice, maxPrice],
           brands: []
         }));
-      } catch (err) {
-        setError(
-          err.response?.data?.message || err.message || "Failed to fetch cars"
-        );
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        customToast({
+          severity: "error",
+          summary: OPPS_MSG,
+          detail:
+            error.response?.data?.message || error.message || SERVER_ERROR,
+          life: 3000,
+          sticky: false,
+          closable: true
+        });
       }
     };
 
@@ -87,14 +88,11 @@ const CarFilters = () => {
     setFilters((prev) => ({ ...prev, price: value }));
   };
 
-  if (loading) return <p>Loading cars...</p>;
-  if (error) return <p>Error: {error}</p>;
-
   return (
-    <div className="container-fluid mx-auto px-md-5 mt-4">
+    <div className="container-fluid mx-auto px-md-5 mt-2">
       <div className="row g-3">
         {/* Sidebar */}
-        <div className="col-12 col-md-3 mb-3">
+        <div className="col-12 col-md-3">
           <h5 className="fw-bold">Cars</h5>
           <div className="card shadow-lg rounded-4 mt-3">
             <div className="card-body">
@@ -158,7 +156,7 @@ const CarFilters = () => {
             </div>
           </div>
         </div>
-        
+
         {/* Car Cards Grid */}
         <div className="col-12 col-md-9">
           <div className="justify-content-between align-items-center text-end">
@@ -167,13 +165,13 @@ const CarFilters = () => {
               View All
             </Link>
           </div>
-          <div className="row mt-3">
+          <div className="row mt-2 g-2">
             {filteredCars.length === 0 ? (
               <p>No cars match the selected filters.</p>
             ) : (
               filteredCars.slice(0, 8).map((car) => (
                 <div
-                  className="col-12 col-sm-6 col-md-4 col-lg-3 mb-3"
+                  className="col-12 col-sm-6 col-md-4 col-lg-3"
                   key={car.id}
                 >
                   <CarCard car={car} />

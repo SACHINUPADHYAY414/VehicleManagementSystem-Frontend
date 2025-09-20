@@ -6,11 +6,12 @@ import { setSelectedCar } from "../../Redux/buyCar";
 const CarCard = ({ car }) => {
   const [liked, setLiked] = useState(false);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const toggleLike = (e) => {
     e.stopPropagation();
     setLiked(!liked);
   };
-  const navigate = useNavigate();
 
   const handleCardClick = () => {
     dispatch(setSelectedCar(car.id));
@@ -19,12 +20,10 @@ const CarCard = ({ car }) => {
 
   return (
     <div
-      className="card position-relative"
+      className="card position-relative h-100"
       onClick={handleCardClick}
       style={{
-        // maxWidth: "25rem",
         width: "100%",
-        borderRadius: "16px",
         overflow: "hidden",
         boxShadow: "0 6px 18px rgba(0, 0, 0, 0.1)",
         cursor: "pointer",
@@ -39,51 +38,86 @@ const CarCard = ({ car }) => {
         e.currentTarget.style.boxShadow = "0 6px 18px rgba(0,0,0,0.1)";
       }}
     >
-      <img
-        src={
-          car.imageUrl ||
-          "https://imgd.aeplcdn.com/1280x720/n/cw/ec/106815/creta-exterior-right-front-three-quarter-5.jpeg?isig=0&q=80"
-        }
-        alt={car.model}
+      <div
         style={{
           width: "100%",
-          height: "150px",
-          objectFit: "cover",
-          borderTopLeftRadius: "16px",
-          borderTopRightRadius: "16px"
+          aspectRatio: "16/9",
+          overflow: "hidden"
         }}
-      />
-      <div className="card-body px-3 py-3">
+      >
+        <img
+          src={
+            car.imageUrl ||
+            "https://imgd.aeplcdn.com/1280x720/n/cw/ec/106815/creta-exterior-right-front-three-quarter-5.jpeg?isig=0&q=80"
+          }
+          alt={car.model}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            display: "block"
+          }}
+        />
+      </div>
+      <hr className="m-0 text-muted w-100" />
+      <div
+        className="card-body px-3 py-2 pb-2"
+        style={{
+          backgroundColor: "#e5e5e5",
+          padding: 0,
+          lineHeight: 1
+        }}
+      >
         <h6
-          className="card-title mb-1 text-secondary-emphasis fw-semibold justify-content-between"
+          className="card-title d-flex align-items-center justify-content-between fw-bold"
+          title={`${car.brand} ${car.model}`}
           style={{
             whiteSpace: "nowrap",
             overflow: "hidden",
             textOverflow: "ellipsis",
-            display: "flex",
-            alignItems: "center",
-            gap: "6px"
+            fontSize: "1.1rem",
+            color: "#333",
+            margin: 0,
+            padding: 0,
+            lineHeight: 1
           }}
-          title={`${car.brand} ${car.model}`}
         >
-          <span>{car.model}</span>
+          <span
+            className="text-muted fw-bold"
+            style={{ flex: 1, lineHeight: 1 }}
+          >
+            <span style={{ fontWeight: 700 }}>{car.model}</span>
+          </span>
           <i
             onClick={toggleLike}
             className={liked ? "bi bi-heart-fill" : "bi bi-heart"}
             style={{
               color: liked ? "#dc3545" : "#6c757d",
-              fontSize: "1.2rem",
-              cursor: "pointer"
+              fontSize: "1.5rem",
+              cursor: "pointer",
+              transition: "color 0.25s ease",
+              marginLeft: "8px",
+              lineHeight: 1
             }}
+            aria-label={liked ? "Unlike" : "Like"}
           ></i>
         </h6>
 
-        <div className="align-items-center text-start">
-          <h6 className="text-black fw-semibold">₹{car.price}</h6>
+        <div
+          className="text-start"
+          style={{
+            margin: 0,
+            padding: 0,
+            fontWeight: "700",
+            fontSize: "1.1rem",
+            lineHeight: 1
+          }}
+        >
+          ₹{car.price.toLocaleString()}
         </div>
-        <hr style={{ margin: "0 0 1px 0", borderColor: "#e0e0e0" }} />
+
         <button
-          className="btn btn-link p-0 text-decoration-none"
+          className="btn btn-link p-0"
           style={{
             fontWeight: "700",
             color: "#dc3545",
@@ -92,11 +126,9 @@ const CarCard = ({ car }) => {
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.color = "#a71d2a";
-            e.currentTarget.style.textDecoration = "none";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.color = "#dc3545";
-            e.currentTarget.style.textDecoration = "none";
           }}
         >
           Book Now &rarr;
