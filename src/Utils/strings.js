@@ -1,3 +1,5 @@
+// Company Name
+export const COMPANY_NAME = "Nova Motor";
 // General Messages
 export const OPPS_MSG = "Oops!";
 export const SUCCESS_MSG = "Success!";

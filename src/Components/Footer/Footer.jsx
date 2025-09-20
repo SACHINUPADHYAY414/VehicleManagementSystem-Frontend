@@ -1,5 +1,6 @@
 import React from "react";
 import { NavLink } from "react-router-dom";
+import { COMPANY_NAME } from "../../Utils/strings";
 
 const footerData = {
   columns: [
@@ -41,14 +42,13 @@ const footerData = {
     }
   ],
   logo: "/images/VehicleHub-logo.png",
-  description:
-    "VehicleHub offers the best platform to buy and sell cars with ease, trusted dealers, and hassle-free financing options.",
+  description: `${COMPANY_NAME} offers the best platform to buy and sell cars with ease, trusted dealers, and hassle-free financing options.`,
   appBadges: [
     { href: "#", imgSrc: "/assets/PlayStore.png", alt: "Google Play" },
     { href: "#", imgSrc: "/assets/AppStore.png", alt: "App Store" }
   ],
   qrCode: "/assets/Qr.png",
-  copyright: "© 2025 VehicleHub.com. All rights reserved."
+  copyright: `© 2025 ${COMPANY_NAME} All rights reserved.`
 };
 
 const Footer = () => {
@@ -108,14 +108,7 @@ const Footer = () => {
           <div className="row align-items-center">
             <div className="col-md-6">
               <div className="d-flex flex-column align-items-start">
-                <div className="d-flex align-items-center">
-                  <h5 className="mb-1 me-2">
-                    <span className="fw-bold">VehicleHub</span>
-                    <span style={{ fontSize: "0.7rem", fontWeight: "bold" }}>
-                      .com
-                    </span>
-                  </h5>
-                </div>
+                <h5 className="mb-0 fw-bold">{COMPANY_NAME}</h5>
                 <p className="small text-white-50 mb-0">
                   {footerData.description}
                 </p>
@@ -125,7 +118,7 @@ const Footer = () => {
             <div className="col-md-6 d-flex flex-column flex-md-row align-items-center justify-content-md-end gap-4 mt-3 mt-md-0">
               <div>
                 <p className="small fw-semibold mb-1">
-                  Download VehicleHub App
+                  Download {COMPANY_NAME} App
                 </p>
                 <div className="d-flex gap-2">
                   {footerData.appBadges.map((badge, idx) => (

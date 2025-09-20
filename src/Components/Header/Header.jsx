@@ -13,7 +13,7 @@ import { persistor } from "../../Redux/store";
 import { CLEAR_LOGIN_DATA } from "../../Redux/authSlice";
 import { IoMdLogOut } from "react-icons/io";
 import { useToastr } from "../Toastr/ToastrProvider";
-import { SUCCESS_MSG } from "../../Utils/strings";
+import { COMPANY_NAME, SUCCESS_MSG } from "../../Utils/strings";
 import { RiAccountCircleLine } from "react-icons/ri";
 import * as bootstrap from "bootstrap";
 import { CLEAR_SELECT_CAR } from "../../Redux/buyCar";
@@ -126,40 +126,34 @@ const NavbarEMT = () => {
         <div className="container">
           {/* Top Bar */}
           <div className="top-bar d-flex justify-content-between align-items-center py-1">
-            <div className="d-flex align-items-center">
-              <NavLink to="/" className="text-decoration-none">
-                <h5
-                  className="mb-0"
-                  style={{
-                    fontFamily: "'Poppins', sans-serif",
-                    fontWeight: 600
-                  }}
-                >
-                  <span style={{ color: "#007bff", fontSize: "1.5rem" }}>
-                    VehicleHub
-                  </span>
-                  <span
-                    style={{
-                      fontSize: "0.75rem",
-                      color: "#007bff",
-                      marginLeft: "1px"
-                    }}
-                  >
-                    .com
-                  </span>
-                </h5>
-              </NavLink>
-            </div>
+            <NavLink
+              to="/"
+              className="text-decoration-none d-flex align-items-center"
+            >
+              <h5
+                className="mb-0 fw-semibold text-white fs-5"
+                style={{ textShadow: "2px 1px 1px rgba(0, 123, 255, 0.7)" }}
+              >
+                {COMPANY_NAME}
+              </h5>
+            </NavLink>
+
             <div className="d-flex align-items-center">
               <button
-                className="btn btn-outline-light d-md-none"
+                className="btn btn-outline-light rounded-1 d-md-none"
                 type="button"
                 data-bs-toggle="offcanvas"
                 data-bs-target="#offcanvasNavbar"
                 aria-controls="offcanvasNavbar"
+                style={{
+                  fontSize: "0.7rem",
+                  lineHeight: 1,
+                  padding: "0.35rem 0.42rem"
+                }}
               >
                 ☰
               </button>
+
               <div className="bottom-menu d-none d-md-flex justify-content-center gap-3 align-items-center">
                 {/* ✅ New Cars Dropdown */}
                 <div className="dropdown">
@@ -173,13 +167,13 @@ const NavbarEMT = () => {
                     <FaTaxi
                       style={{ verticalAlign: "middle", marginRight: "6px" }}
                     />
-                     Cars
+                    Cars
                   </span>
                   <ul
                     className="dropdown-menu"
                     aria-labelledby="newCarsDropdown"
                   >
-                   {brands.slice(0, 5).map((brand) => (
+                    {brands.slice(0, 5).map((brand) => (
                       <li key={brand} className="nav-link">
                         <NavLink
                           className="dropdown-item"
