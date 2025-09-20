@@ -119,13 +119,13 @@ const NavbarEMT = () => {
   return (
     <>
       <div
-        className={`emt-navbar sticky-top py-2 pb-0 ${
+        className={`emt-navbar sticky-top ${
           isOffcanvasOpen ? "z-lower" : "z-top"
         }`}
       >
         <div className="container">
           {/* Top Bar */}
-          <div className="top-bar d-flex justify-content-between align-items-center py-1">
+          <div className="top-bar d-flex justify-content-between align-items-center">
             <NavLink
               to="/"
               className="text-decoration-none d-flex align-items-center"
